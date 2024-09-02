@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<save>
+	<version major="3" minor="2" revision="0" build="0" lslib_meta="v1,bswap_guids" />
+	<region id="VoiceMetaData">
+		<node id="VoiceMetaData">
+			<children>
+				<node id="VoiceSpeakerMetaData">
+					<attribute id="MapKey" type="FixedString" value="3ed74f06-3c60-42dc-83f6-f034cb47c679" />
+					<children>
+						<node id="MapValue">
+							<children>
+								<node id="VoiceTextMetaData">
+									<attribute id="MapKey" type="FixedString" value="h00033791g53deg4d9bg9f12g85b31e1f5236" />
+									<children>
+										<node id="MapValue">
+											<attribute id="Codec" type="FixedString" value="VORBIS" />
+											<attribute id="Length" type="float" value="9.232291" />
+											<attribute id="Priority" type="FixedString" value="P1_StoryDialog" />
+											<attribute id="Source" type="FixedString" value="v3ed74f063c6042dc83f6f034cb47c679_h00033791g53deg4d9bg9f12g85b31e1f5236_1.wem" />
+										</node>
+									</children>
+								</node>
+								<node id="VoiceTextMetaData">
+									<attribute id="MapKey" type="FixedString" value="h000347eag76d8g47b6g9fe3g4f2162783f9d" />
+									<children>
+										<node id="MapValue">
+											<attribute id="Codec" type="FixedString" value="VORBIS" />
+											<attribute id="Length" type="float" value="1.4549896" />
+											<attribute id="Priority" type="FixedString" value="P2_VoiceBark_AD" />
+											<attribute id="Source" type="FixedString" value="v3ed74f063c6042dc83f6f034cb47c679_h000347eag76d8g47b6g9fe3g4f2162783f9d.wem" />
+										</node>
+									</children>
+								</node>
+								<node id="VoiceTextMetaData">
+									<attribute id="MapKey" type="FixedString" value="h000e094agb97cg4fb6g8715gd57f18011945" />
+									<children>
+										<node id="MapValue">
+											<attribute id="Codec" type="FixedString" value="VORBIS" />
+											<attribute id="Length" type="float" value="1.6759063" />
+											<attribute id="Priority" type="FixedString" value="P3_StoryDialog_AD" />
+											<attribute id="Source" type="FixedString" value="v3ed74f063c6042dc83f6f034cb47c679_h155ebe28g07c3g4d99gbd67g80a114367764.wem" />
+										</node>
+									</children>
+								</node>
+							</children>
+						</node>
+					</children>
+				</node>
+			</children>
+		</node>
+	</region>
+</save>
