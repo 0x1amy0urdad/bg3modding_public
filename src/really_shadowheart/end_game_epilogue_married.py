@@ -24,15 +24,19 @@ def create_conversation_epilogue_married_couple() -> None:
     grandchildren_node_uuid = 'dfd3c34d-bf19-4757-b7af-947a211ddfc4'
     i_can_picture_the_look_node_uuid = 'f51489c6-aa4e-4fc5-9829-0d570927b26d'
     do_you_really_mean_that_node_uuid = '8abe32a0-accc-4e41-9a7c-2223af5e28c4'
+    do_you_really_mean_that_female_node_uuid = 'ff185999-5803-4d54-beb2-3b48696ca281'
     i_suppose_i_do_node_uuid = 'e617406c-507b-4c5d-83f4-b06f3aa0bbd9'
     youd_never_ask_node_uuid = 'bfb830dd-c95b-4335-ae38-0e5b5fdc5fe1'
-    im_going_to_be_dad_node_uuid = '3f3bcaf2-a919-4f4c-a1cf-a93ba6f3b10a'
+    we_are_expecting_node_uuid = '3f3bcaf2-a919-4f4c-a1cf-a93ba6f3b10a'
+    want_to_have_children_node_uuid = '974ee5f8-86f5-4e83-9e9c-50659b48f934'
     yes_perhaps_node_uuid = '689d5c5b-b3e4-46ea-a48e-6032c277555a'
     pay_no_attnetion_node_uuid = 'f8d67cda-5f71-4742-a147-d2a3893a16dd'
     parents_would_step_in_node_uuid = '484cef77-5d60-4f5e-a821-53539a8dc877'
+    children_source_of_trouble_node_uuid = 'c1c246ca-fb4d-4353-bfc5-484a077090bc'
     sort_of_trouble_i_live_for_node_uuid = '47077824-d907-4219-ada0-040056c79ebe'
     happy_tear_node_uuid = '72d5f1d1-8c7e-40c7-a265-4f4fbbe642eb'
     keep_that_secret_node_uuid = '193fffb8-fecf-43f4-a3c2-aef23a5bbcf8'
+    bypass_node_uuid = 'fc393ad8-b6d1-45a6-bace-35f020594445'
     kiss_reaction_node_uuid = 'ae4e4d40-150b-46a7-8545-ab2bc518441f'
     jump_back_1_node_uuid = 'd6011a52-e32f-4ec3-8175-49c1a5501abf'
     jump_back_2_node_uuid = 'd91a8d4d-0a24-4072-8a0d-57c5982e10b0'
@@ -64,7 +68,7 @@ def create_conversation_epilogue_married_couple() -> None:
         show_once = True,
         checkflags = (
             bg3.flag_group(bg3.flag_group.GLOBAL, (
-                bg3.flag(ORI_Shadowheart_Tav_State_Married.uuid, True),
+                bg3.flag(Shadowheart_Tav_State_Married.uuid, True),
                 bg3.flag(bg3.FLAG_ORI_Shadowheart_State_RetiredToFarmWithAvatar, True)
             )),
             bg3.flag_group(bg3.flag_group.LOCAL, (
@@ -118,7 +122,7 @@ def create_conversation_epilogue_married_couple() -> None:
         show_once=True,
         checkflags=(
             bg3.flag_group(bg3.flag_group.GLOBAL, (
-                bg3.flag(ORI_Shadowheart_Tav_State_Married.uuid, True),
+                bg3.flag(Shadowheart_Tav_State_Married.uuid, True),
                 bg3.flag(bg3.FLAG_ORI_Shadowheart_State_RetiredToFarmWithAvatar, True)
             )),
             bg3.flag_group(bg3.flag_group.LOCAL, (
@@ -157,7 +161,13 @@ def create_conversation_epilogue_married_couple() -> None:
     d.create_standard_dialog_node(
         i_can_picture_the_look_node_uuid,
         bg3.SPEAKER_SHADOWHEART,
-        [pay_no_attnetion_node_uuid, do_you_really_mean_that_node_uuid, im_going_to_be_dad_node_uuid],
+        [
+            pay_no_attnetion_node_uuid,
+            do_you_really_mean_that_female_node_uuid,
+            do_you_really_mean_that_node_uuid,
+            we_are_expecting_node_uuid,
+            want_to_have_children_node_uuid
+        ],
         bg3.text_content('hc15d705ag42afg485cg937dg0e717d80f5d3', 1),
         constructor=bg3.dialog_object.ANSWER)
 
@@ -176,12 +186,30 @@ def create_conversation_epilogue_married_couple() -> None:
         phase_duration = 4.2
     )
 
-    # Wait, are you... Do you really mean that?
+    # Wait, are we... expecting? Do you really mean that?
     d.create_standard_dialog_node(
         do_you_really_mean_that_node_uuid,
         bg3.SPEAKER_PLAYER,
         [i_suppose_i_do_node_uuid],
         bg3.text_content('h6af6d9f8gede1g482fg8cc6g0cecb08e0cfa', 1),
+        checkflags = (
+            bg3.flag_group('Tag', (
+                bg3.flag(bg3.TAG_FEMALE, False, slot_idx_tav),
+            )),
+        ),
+        constructor=bg3.dialog_object.QUESTION)
+
+    # Wait, are you serious? Do you really want to adopt a child?
+    d.create_standard_dialog_node(
+        do_you_really_mean_that_female_node_uuid,
+        bg3.SPEAKER_PLAYER,
+        [i_suppose_i_do_node_uuid],
+        bg3.text_content('h6ac59daag1832g4d71g9853g0b23ad51eae0', 1),
+        checkflags = (
+            bg3.flag_group('Tag', (
+                bg3.flag(bg3.TAG_FEMALE, True, slot_idx_tav),
+            )),
+        ),
         constructor=bg3.dialog_object.QUESTION)
 
     # I suppose I do, don't I?
@@ -209,7 +237,7 @@ def create_conversation_epilogue_married_couple() -> None:
     d.create_standard_dialog_node(
         youd_never_ask_node_uuid,
         bg3.SPEAKER_SHADOWHEART,
-        [keep_that_secret_node_uuid],
+        [keep_that_secret_node_uuid, bypass_node_uuid],
         bg3.text_content('ha5ade060g70b9g4725g8f26g3f6232f11ecf', 1),
         constructor=bg3.dialog_object.ANSWER)
 
@@ -228,12 +256,30 @@ def create_conversation_epilogue_married_couple() -> None:
         phase_duration=4.4
     )
 
-    # Did you just say that I'm going to be a dad?!
+    # Did you just say that we are expecting?!
     d.create_standard_dialog_node(
-        im_going_to_be_dad_node_uuid,
+        we_are_expecting_node_uuid,
         bg3.SPEAKER_PLAYER,
         [yes_perhaps_node_uuid],
         bg3.text_content('haadd3e89g0eeeg4514g9cf2g3a73b36b9f98', 1),
+        checkflags = (
+            bg3.flag_group('Tag', (
+                bg3.flag(bg3.TAG_FEMALE, False, slot_idx_tav),
+            )),
+        ),
+        constructor=bg3.dialog_object.QUESTION)
+
+    # Did you just say you want to raise a child?
+    d.create_standard_dialog_node(
+        want_to_have_children_node_uuid,
+        bg3.SPEAKER_PLAYER,
+        [yes_perhaps_node_uuid],
+        bg3.text_content('h8e6de288g61c0g4ff3g8e6dga6505c33e960', 1),
+        checkflags = (
+            bg3.flag_group('Tag', (
+                bg3.flag(bg3.TAG_FEMALE, True, slot_idx_tav),
+            )),
+        ),
         constructor=bg3.dialog_object.QUESTION)
 
     # Yes, perhaps...
@@ -258,12 +304,29 @@ def create_conversation_epilogue_married_couple() -> None:
         phase_duration=2.54
     )
 
+    d.create_standard_dialog_node(
+        bypass_node_uuid,
+        bg3.SPEAKER_SHADOWHEART,
+        [happy_tear_node_uuid, children_source_of_trouble_node_uuid],
+        None,
+        checkflags = (
+            bg3.flag_group('Tag', (
+                bg3.flag(bg3.TAG_FEMALE, True, slot_idx_tav),
+            )),
+        ),
+        constructor=bg3.dialog_object.ANSWER)
+
     # Let's keep that our special secret. Oh you know what I mean...
     d.create_standard_dialog_node(
         keep_that_secret_node_uuid,
         bg3.SPEAKER_SHADOWHEART,
         [happy_tear_node_uuid, parents_would_step_in_node_uuid],
         bg3.text_content('h198df115g788ag4de4g9ccfg5c8e82bc10f8', 1),
+        checkflags = (
+            bg3.flag_group('Tag', (
+                bg3.flag(bg3.TAG_FEMALE, False, slot_idx_tav),
+            )),
+        ),
         constructor=bg3.dialog_object.ANSWER)
 
     t.create_simple_dialog_answer_phase(
@@ -296,7 +359,26 @@ def create_conversation_epilogue_married_couple() -> None:
         bg3.SPEAKER_PLAYER,
         [sort_of_trouble_i_live_for_node_uuid],
         bg3.text_content('hab27fa75ge385g4d81g8b81gca48789e9a7b', 1),
+        checkflags = (
+            bg3.flag_group('Tag', (
+                bg3.flag(bg3.TAG_FEMALE, False, slot_idx_tav),
+            )),
+        ),
         constructor=bg3.dialog_object.QUESTION)
+
+    # Children are source of trouble, do you know that?
+    d.create_standard_dialog_node(
+        children_source_of_trouble_node_uuid,
+        bg3.SPEAKER_PLAYER,
+        [sort_of_trouble_i_live_for_node_uuid],
+        bg3.text_content('h460ba56dgd453g4e9cgbd11g1a7133b34cbe', 1),
+        checkflags = (
+            bg3.flag_group('Tag', (
+                bg3.flag(bg3.TAG_FEMALE, True, slot_idx_tav),
+            )),
+        ),
+        constructor=bg3.dialog_object.QUESTION)
+    
 
     # That's the sort of trouble I live for.
     d.create_standard_dialog_node(
@@ -331,13 +413,6 @@ def create_conversation_epilogue_married_couple() -> None:
     kiss_alias_5_node_uuid = 'e47d5f79-0ee2-4430-b26d-1662bcc378ba'
     kiss_alias_6_node_uuid = 'bc3c8c7a-0c5c-4f89-ab21-08338fe7ed74'
     kiss_alias_7_node_uuid = 'ef099d90-1b67-4f51-9b10-64a1178aaf97'
-
-    kiss_node_children = [
-        '0d90dbb4-c1e2-62db-355c-b364f28a057b',
-        '712b4a7a-d3ed-eaf8-b03d-22d1338ebd7c',
-        '335e9909-f4c3-fadf-9839-292a74494498',
-        '7f16cdaa-ec53-fcfe-dd34-40752573e131'
-    ]
 
     # &lt;i&gt;Shed a happy tear and kiss her.&lt;/i&gt;
     d.create_standard_dialog_node(

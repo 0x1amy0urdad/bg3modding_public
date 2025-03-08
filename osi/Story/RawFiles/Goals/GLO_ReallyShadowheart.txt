@@ -1,0 +1,44 @@
+Version 1
+SubGoalCombiner SGC_AND
+INITSECTION
+
+KBSECTION
+// If Shadowheart breaks up with Tav, they don't sleep together 
+IF
+FlagCleared(ORI_State_PartneredWithShadowheart_3808ae35-ad4e-465b-800b-63d32b77211e, _Player, _)
+THEN
+ClearFlag(Shadowheart_Tav_Sleep_Together_0187f803-6b3c-4249-b5a8-0e968306978b, _Player);
+
+// Long rest handler
+IF
+LongRestFinished()
+THEN
+ClearFlag(Shadowheart_Hesitated_To_Ask_d8d602d9-d2ab-4a8e-8ffb-c465fd52ce18, S_Player_ShadowHeart_3ed74f06-3c60-42dc-83f6-f034cb47c679);
+ClearFlag(Tav_Already_Prayed_With_Her_Today_a2a96abb-1b40-42fe-9f8b-6685eb173c63, S_Player_ShadowHeart_3ed74f06-3c60-42dc-83f6-f034cb47c679);
+
+// Clear Tav_Noticed_Shadowheart_Hesitated_To_Ask when dialog ends
+IF
+DialogEnded(_, _)
+THEN
+ClearFlag(Tav_Noticed_Shadowheart_Hesitated_To_Ask_7b7c0c83-d397-42c5-b0bd-847b1f28cce1, S_Player_ShadowHeart_3ed74f06-3c60-42dc-83f6-f034cb47c679);
+
+// Osiris health check
+IF
+FlagSet(Osiris_Health_Check_dd83b1a1-2fa2-4ef7-a104-8c2471da6d50, _Player, _)
+THEN
+SetFlag(Osiris_Health_Check_Passed_1f2366eb-73ce-4e39-bbd8-cb0684870b34, _Player);
+
+IF
+FlagSet(CAMP_Halsin_CRD_Romance_CheckWithExistingPartner_b523a2ba-8abf-4116-a5c1-636c77920ca3, _Player, _)
+AND
+GetFlag(ORI_State_PartneredWithShadowheart_3808ae35-ad4e-465b-800b-63d32b77211e, _Player, 1)
+THEN
+SetFlag(Cheated_On_Shadowheart_94181834-3277-492b-b223-11309c7bd90c, _Player);
+
+IF
+StatusApplied(S_Player_ShadowHeart_3ed74f06-3c60-42dc-83f6-f034cb47c679, "SCL_SHADOW_CURSE", _, _)
+THEN
+SetFlag(Shadowheart_Shadow_Cursed_a2a44d74-eb8d-4d22-bc14-ddf9d482aed9, S_Player_ShadowHeart_3ed74f06-3c60-42dc-83f6-f034cb47c679);
+EXITSECTION
+
+ENDEXITSECTION

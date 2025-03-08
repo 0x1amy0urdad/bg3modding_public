@@ -11,6 +11,49 @@ from .flags import *
 ########################################################################################
 
 def patch_cloister_events() -> None:
+
+    ########################################################################################
+    # ShadowHeart_InParty2.lsf
+    ########################################################################################
+
+    d = bg3.dialog_object(files.get_file('Gustav', 'Mods/GustavDev/Story/DialogsBinary/Companions/ShadowHeart_InParty2.lsf'))
+
+    speaker_idx_tav = d.get_speaker_slot_index(bg3.SPEAKER_PLAYER)
+    speaker_idx_shadowheart = d.get_speaker_slot_index(bg3.SPEAKER_SHADOWHEART)
+
+    smells_of_the_city_node_uuid = 'a8bfd700-78db-04e4-8bcb-41b90f67aa44'
+    found_memorable_locations_custom_flag = 'ac830dd2-bad2-44aa-9970-136c16477500'
+    shadowheart_inparty_event_parentpointstart_flag = '56cbbbaa-b2fb-4e49-94a2-24601d19b446'
+    shadowheart_inparty_discussedcitymemories_dialog_flag = '446ce0c9-8bc2-4b87-b45f-504511836148'
+    d.set_dialog_flags(
+        smells_of_the_city_node_uuid,
+        setflags = (
+            bg3.flag_group('Global', (
+                bg3.flag(bg3.FLAG_ORI_Shadowheart_State_ParentPoints_HasEnoughPoints, True, None),
+            )),
+            bg3.flag_group('Dialog', (
+                bg3.flag(shadowheart_inparty_discussedcitymemories_dialog_flag, True, speaker_idx_tav),
+            )),
+            bg3.flag_group('Object', (
+                bg3.flag(shadowheart_inparty_event_parentpointstart_flag, True, speaker_idx_tav),
+            ))
+        ),
+        checkflags = (
+            bg3.flag_group('Dialog', (
+                bg3.flag(shadowheart_inparty_discussedcitymemories_dialog_flag, False, speaker_idx_tav),
+            )),
+            bg3.flag_group('Object', (
+                bg3.flag(found_memorable_locations_custom_flag, True, speaker_idx_shadowheart),
+                bg3.flag(bg3.FLAG_ORI_Shadowheart_State_HadParentsPoints, True, speaker_idx_shadowheart),
+            )),
+            bg3.flag_group('Global', (
+                bg3.flag(bg3.FLAG_ORI_Shadowheart_State_RejectShar_KilledParents, False, None),
+                bg3.flag(bg3.FLAG_ORI_Shadowheart_State_RejectShar_SavedParents, False, None),
+                bg3.flag(bg3.FLAG_ORI_Shadowheart_State_Shar_SavedParents, False, None),
+                bg3.flag(bg3.FLAG_ORI_Shadowheart_State_Shar_KilledParents, False, None),
+            )),
+        ))
+
     ########################################################################################
     # LOW_SharGrotto_ViconiaDefeated_OM_Shadowheart_COM.lsf
     ########################################################################################
@@ -78,19 +121,13 @@ def patch_cloister_events() -> None:
     slot_idx_tav = d.get_speaker_slot_index(bg3.SPEAKER_PLAYER)
     slot_idx_shadowheart = d.get_speaker_slot_index(bg3.SPEAKER_SHADOWHEART)
 
-    tag_god_selune_true = bg3.flag_group("Tag", (
-        bg3.flag(bg3.GOD_Selune, True, slot_idx_tav),
-    ))
-    tag_god_selune_false = bg3.flag_group("Tag", (
-        bg3.flag(bg3.GOD_Selune, False, slot_idx_tav),
-    ))
-
     last_hurdle_node_uuid = '4aabcb2b-a3d6-2cb4-1cdf-0eb99e2463ca'
     but_the_curse_node_uuid = '5b7dc260-a93a-e231-efc9-a37f73c60089'
     you_have_great_faith_node_uuid = '34ae1c3e-8cdc-0eb0-00fa-773859e5645d'
     you_have_great_faith_adv_node_uuid = 'd61a9f9c-c241-4e6f-880a-077f01659262'
     you_can_endure_it_node_uuid = '1db6f59d-8002-109b-f915-d89a73c2de37'
     you_can_endure_it_adv_node_uuid = '90e91f1f-c526-40a1-baa8-536e48e20c2b'
+    this_is_your_choice_node_uuid = '1f8d3b87-6a24-cc6c-11c3-684cf1bcdfef'
     remain_silent_node_uuid = 'c3a6e897-7565-25d4-ef70-24a968e9785b'
     is_this_truly_what_you_want_node_uuid = '13a9c749-b989-b71d-760c-c2a55796e202'
     you_should_end_their_suffering_node_uuid = '502739a5-ba58-d164-f793-d18c14dd8bf6'
@@ -98,6 +135,7 @@ def patch_cloister_events() -> None:
     your_father_is_right_node_uuid = 'cba612bc-d577-8782-683e-d7797679320d'
     you_will_be_free_node_uuid = '6b7c30e5-d0c6-be55-c927-f1d62fc602be'
     dont_ask_me_to_kill_my_parents_node_uuid = '0686e3dc-23d6-4920-df64-2f3bbb9707fd'
+    passive_check_bypass_node_uuid = 'af524645-8414-42a6-8276-79dc5fe59542'
     passive_check_node_uuid = '7b93af0a-5690-44d6-873d-c370ee4d544b'
     i_need_to_obey_my_parents_wishes = '4f4ac30c-45c4-283d-c696-b2bee39d1c2b'
 
@@ -116,12 +154,12 @@ def patch_cloister_events() -> None:
 
     d.set_dialog_flags(you_have_great_faith_node_uuid, checkflags = (
         bg3.flag_group('Object', (
-            bg3.flag(bg3.FLAG_Approval_AtLeast_60_For_Sp2, False, slot_idx_shadowheart),
+            bg3.flag(bg3.FLAG_ORI_State_PartneredWithShadowheart, False, slot_idx_tav),
         )),
     ))
     d.set_dialog_flags(you_can_endure_it_node_uuid, checkflags = (
         bg3.flag_group('Object', (
-            bg3.flag(bg3.FLAG_Approval_AtLeast_60_For_Sp2, False, slot_idx_shadowheart),
+            bg3.flag(bg3.FLAG_ORI_State_PartneredWithShadowheart, False, slot_idx_tav),
         )),
     ))
 
@@ -141,7 +179,6 @@ def patch_cloister_events() -> None:
         checkflags = (
             bg3.flag_group('Object', (
                 bg3.flag(bg3.FLAG_ORI_State_PartneredWithShadowheart, True, slot_idx_tav),
-                bg3.flag(bg3.FLAG_Approval_AtLeast_60_For_Sp2, True, slot_idx_shadowheart),
             )),
         ))
 
@@ -161,14 +198,18 @@ def patch_cloister_events() -> None:
         checkflags = (
             bg3.flag_group('Object', (
                 bg3.flag(bg3.FLAG_ORI_State_PartneredWithShadowheart, True, slot_idx_tav),
-                bg3.flag(bg3.FLAG_Approval_AtLeast_60_For_Sp2, True, slot_idx_shadowheart),
             )),
         ))
 
     d.add_child_dialog_node(but_the_curse_node_uuid, you_have_great_faith_adv_node_uuid)
     d.add_child_dialog_node(but_the_curse_node_uuid, you_can_endure_it_adv_node_uuid)
 
+    d.delete_all_children_dialog_nodes(this_is_your_choice_node_uuid)
+    d.add_child_dialog_node(this_is_your_choice_node_uuid, passive_check_bypass_node_uuid)
+    d.add_child_dialog_node(this_is_your_choice_node_uuid, passive_check_node_uuid)
+
     d.delete_all_children_dialog_nodes(remain_silent_node_uuid)
+    d.add_child_dialog_node(remain_silent_node_uuid, passive_check_bypass_node_uuid)
     d.add_child_dialog_node(remain_silent_node_uuid, passive_check_node_uuid)
 
     # You should end their suffering, and yours.
@@ -196,6 +237,7 @@ def patch_cloister_events() -> None:
         constructor=bg3.dialog_object.QUESTION)
 
     d.delete_all_children_dialog_nodes(and_replace_it_with_another_node_uuid)
+    d.add_child_dialog_node(and_replace_it_with_another_node_uuid, passive_check_bypass_node_uuid)
     d.add_child_dialog_node(and_replace_it_with_another_node_uuid, passive_check_node_uuid)
 
     # Let your parents die with honour. They will become Selûne's martyrs, and you will be free.
@@ -208,20 +250,32 @@ def patch_cloister_events() -> None:
         constructor=bg3.dialog_object.QUESTION)
 
     d.delete_all_children_dialog_nodes(dont_ask_me_to_kill_my_parents_node_uuid)
+    d.add_child_dialog_node(dont_ask_me_to_kill_my_parents_node_uuid, passive_check_bypass_node_uuid)
     d.add_child_dialog_node(dont_ask_me_to_kill_my_parents_node_uuid, passive_check_node_uuid)
 
-    # DC 7 Wisdom/Religion passive check to save parents.
+    d.create_standard_dialog_node(
+        passive_check_bypass_node_uuid,
+        bg3.SPEAKER_SHADOWHEART,
+        [last_hurdle_node_uuid],
+        None,
+        checkflags = (
+            bg3.flag_group('Global', (
+                bg3.flag(bg3.FLAG_ORI_Shadowheart_State_ParentPoints_HasEnoughPoints, True, None),
+            )),
+        )
+    )
+
+    # DC 15 Wisdom/Religion passive check to save parents.
     d.create_roll_dialog_node(
         passive_check_node_uuid,
         bg3.SPEAKER_SHADOWHEART,
         bg3.SPEAKER_PLAYER,
         bg3.dialog_object.ABILITY_WISDOM,
         bg3.dialog_object.SKILL_RELIGION,
-        bg3.DC_Act3_Easy,
+        bg3.DC_Act3_Medium,
         last_hurdle_node_uuid,
         is_this_truly_what_you_want_node_uuid,
         None,
-        checkflags=(tag_god_selune_true,),
         passive=True,
         transition_mode=True,
         advantage=0,
@@ -239,59 +293,6 @@ def patch_cloister_events() -> None:
     slot_idx_tav = d.get_speaker_slot_index(bg3.SPEAKER_PLAYER)
 
 
-    ########################################################################################
-    # Bugfix: after saving parents when on enemy of shar path, the discussion about her
-    #         memories was under Shadowheart_InParty_Event_SavedParentsMemoriesEnemy flag
-    #         which is the Shar path flag. Obviously, the conversation never popped up.
-    #         Also, this fix makes that conversation a recurring one.
-    ########################################################################################
-
-    memories_discussion_selune_parents_saved_node_uuid = 'db424664-9086-bb2a-2f73-62b9ab38c641'
-    memories_discussion_selune_parents_killed_node_uuid = 'ac4359eb-ae3a-87c3-4405-2c0ee04bd934'
-    memories_discussion_shar_parents_saved_node_uuid = '287b8eb3-4501-97af-f5a8-4fb7c9928257'
-
-    # Selund path, saved parents
-    d.set_dialog_flags(
-        memories_discussion_selune_parents_saved_node_uuid,
-        setflags=(
-            bg3.flag_group('Object', (
-                bg3.flag('2eb239a8-f3f6-474f-a2a7-636ff19407f0', True, slot_idx_tav),
-            )),
-        ),
-        checkflags=(
-            bg3.flag_group('Global', (
-                bg3.flag(bg3.FLAG_ORI_Shadowheart_State_RejectShar_SavedParents, True, None),
-            )),
-        ))
-
-    # Selune path, killed parents
-    d.set_dialog_flags(
-        memories_discussion_selune_parents_killed_node_uuid,
-        setflags=(
-            bg3.flag_group('Object', (
-                bg3.flag('2825740b-0dc2-4e82-8ce4-ef6b87ea810b', True, slot_idx_tav),
-            )),
-        ),
-        checkflags=(
-            bg3.flag_group('Global', (
-                bg3.flag(bg3.FLAG_ORI_Shadowheart_State_RejectShar_KilledParents, True, None),
-            )),
-        ))
-
-    # Shar path, saved parents
-    d.set_dialog_flags(
-        memories_discussion_shar_parents_saved_node_uuid,
-        setflags=(
-            bg3.flag_group('Object', (
-                bg3.flag('ad4382a9-a10c-4c2f-981c-6da40ac4682b', True, slot_idx_tav),
-            )),
-        ),
-        checkflags=(
-            bg3.flag_group('Global', (
-                bg3.flag(bg3.FLAG_ORI_Shadowheart_State_Shar_SavedParents, True, None),
-            )),
-        ))
-
     #######################################################################################
     # After the events in the Chamber of Loss, Shadowheart stays in camp until long rest
     #######################################################################################
@@ -308,8 +309,8 @@ def patch_cloister_events() -> None:
         constructor=bg3.dialog_object.GREETING,
         checkflags=(
             bg3.flag_group('Object', (
-                bg3.flag(ORI_Shadowheart_AfterParents.uuid, True, slot_idx_shadowheart),
-                bg3.flag(ORI_Shadowheart_CriedAfterParents.uuid, False, slot_idx_shadowheart),
+                bg3.flag(Shadowheart_After_Parents_Crisis.uuid, True, slot_idx_shadowheart),
+                bg3.flag(Shadowheart_Cried_After_Parents.uuid, False, slot_idx_shadowheart),
             )),
         ),
         end_node=True)
@@ -345,8 +346,8 @@ def patch_cloister_events() -> None:
         'daa105c0-10cc-4334-a550-9a0103674cc4',
         setflags=(
             bg3.flag_group('Object', (
-                bg3.flag(ORI_Shadowheart_AfterParents.uuid, True, slot_idx_shadowheart),
-                bg3.flag(ORI_Shadowheart_CriedAfterParents.uuid, False, slot_idx_shadowheart),
+                bg3.flag(Shadowheart_After_Parents_Crisis.uuid, True, slot_idx_shadowheart),
+                bg3.flag(Shadowheart_Cried_After_Parents.uuid, False, slot_idx_shadowheart),
                 bg3.flag(bg3.FLAG_OriginRemoveFromPartyAfterDialog, True, slot_idx_shadowheart),
                 bg3.flag('d59fe46f-cce5-4a2c-ac44-65cfda9073f2', False, slot_idx_tav) # Shadowheart_InParty_Event_KilledParentsEnemyStart
             )),
@@ -360,8 +361,8 @@ def patch_cloister_events() -> None:
         '48f77fda-8492-4b65-8a7f-a533388250f6',
         setflags=(
             bg3.flag_group('Object', (
-                bg3.flag(ORI_Shadowheart_AfterParents.uuid, True, slot_idx_shadowheart),
-                bg3.flag(ORI_Shadowheart_CriedAfterParents.uuid, False, slot_idx_shadowheart),
+                bg3.flag(Shadowheart_After_Parents_Crisis.uuid, True, slot_idx_shadowheart),
+                bg3.flag(Shadowheart_Cried_After_Parents.uuid, False, slot_idx_shadowheart),
                 bg3.flag(bg3.FLAG_OriginRemoveFromPartyAfterDialog, True, slot_idx_shadowheart),
                 bg3.flag('e3c97bf9-c58c-4dfb-ba8e-27cba587d77d', False, slot_idx_tav) # Shadowheart_InParty_Event_SavedParentsEnemyStart
             )),
@@ -375,8 +376,8 @@ def patch_cloister_events() -> None:
         'a11549ed-8ffe-417d-a0f4-1ebbe313661d',
         setflags=(
             bg3.flag_group('Object', (
-                bg3.flag(ORI_Shadowheart_AfterParents.uuid, True, slot_idx_shadowheart),
-                bg3.flag(ORI_Shadowheart_CriedAfterParents.uuid, False, slot_idx_shadowheart),
+                bg3.flag(Shadowheart_After_Parents_Crisis.uuid, True, slot_idx_shadowheart),
+                bg3.flag(Shadowheart_Cried_After_Parents.uuid, False, slot_idx_shadowheart),
                 bg3.flag(bg3.FLAG_OriginRemoveFromPartyAfterDialog, True, slot_idx_shadowheart),
                 bg3.flag('1e379d40-cd40-4b49-a45f-d9b28c2d0437', False, slot_idx_tav) # Shadowheart_InParty_Event_SavedParentsSharStart
             )),

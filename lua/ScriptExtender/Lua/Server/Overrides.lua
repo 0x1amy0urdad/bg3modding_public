@@ -22,4 +22,6 @@ Ext.Events.StatsLoaded:Subscribe(function (e)
     ApplyOverrides()
 end)
 
-Ext.Require("Server/ReallyShadowheartServer.lua")
+Ext.Utils.Print("")
+Ext.Utils.Print("ReallyShadowheart server: subcribed to engine events")
+Ext.Utils.Print("")

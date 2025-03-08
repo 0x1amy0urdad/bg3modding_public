@@ -31,6 +31,8 @@ def patch_mizora_aftermath_scene() -> None:
     i_really_fell_for_you_node_uuid = '4413099c-dd54-4b82-b719-564dfc458d55'
     i_admit_it_node_uuid = '09507b62-542a-4e2a-879f-3e13f40afbe2'
     youre_handsome_node_uuid = '679cea8a-14bd-48e7-8852-1d0854a7ca5d'
+    youre_pretty_node_uuid = '0124d131-eeb2-423c-919d-3c86ec954428'
+    im_not_seeking_to_control_you_node_uuid = '2c756513-a11d-48c5-8fba-60586e2fec0c'
     you_can_do_better_node_uuid = '5d155a9d-7275-419f-9bd1-2e96123cccbe'
     easily_said_by_some_node_uuid = '5dbd4076-3882-47b4-adf1-1a2abb46eeae'
     you_dont_believe_me_node_uuid = '1d1df4e2-c0ec-4e80-822e-d74d4500a495'
@@ -43,6 +45,7 @@ def patch_mizora_aftermath_scene() -> None:
     i_deserve_to_be_hated_node_uuid = 'f9bcd638-f8b9-41f8-add0-43e86189706f'
     dont_be_ridiculous_node_uuid = 'affa609f-9355-4491-841c-1e595db61121'
     what_kind_of_question_node_uuid = 'c9c4082e-a25a-4349-8b55-9abc528fde34'
+    i_cant_trust_you_node_uuid = '6f97974f-1eb4-4b09-98e9-8e5c35dde499'
     theres_just_moments_node_uuid = 'dfae2ff2-c989-4701-8923-ca9609ec913f'
 
     # a template dialog uuid for cloning timeline phases
@@ -56,7 +59,7 @@ def patch_mizora_aftermath_scene() -> None:
 
     # This fixes a bug: Mizora has 2 lines, one per each Shadowheart's path.
     # In original game, Mizora uses Sharran line for Selune Shadowheart, and vice versa.
-    # This put correct flags on correct lines.
+    # This corrects the flags.
     d.set_dialog_flags('8f60f1d8-0021-20b4-252d-0529ddf3daff', checkflags=(
         bg3.flag_group('Global', (
             bg3.flag(bg3.FLAG_ORI_Shadowheart_State_EnemyOfSharPath, True, None),
@@ -159,7 +162,7 @@ def patch_mizora_aftermath_scene() -> None:
     d.create_standard_dialog_node(
         i_hesitated_node_uuid,
         bg3.SPEAKER_SHADOWHEART,
-        [i_really_fell_for_you_node_uuid],
+        [theres_just_moments_node_uuid],
         bg3.text_content('h0b36cc12gf68bg4543g91ddg329318005c48', 1))
     emotions = {
         bg3.SPEAKER_SHADOWHEART: ((0.0, 1024, None), (4.35, 1, 3)),
@@ -180,7 +183,7 @@ def patch_mizora_aftermath_scene() -> None:
     d.create_standard_dialog_node(
         i_admit_it_node_uuid,
         bg3.SPEAKER_PLAYER,
-        [youre_handsome_node_uuid, easily_said_by_some_node_uuid],
+        [youre_pretty_node_uuid, youre_handsome_node_uuid, easily_said_by_some_node_uuid],
         bg3.text_content('h52c04688gf4a9g4178ga99eg7f58bfe6fae5', 1),
         constructor=bg3.dialog_object.QUESTION)
 
@@ -188,7 +191,7 @@ def patch_mizora_aftermath_scene() -> None:
     d.create_standard_dialog_node(
         i_deserve_to_be_hated_node_uuid,
         bg3.SPEAKER_PLAYER,
-        [youre_handsome_node_uuid, easily_said_by_some_node_uuid],
+        [youre_pretty_node_uuid, youre_handsome_node_uuid, easily_said_by_some_node_uuid],
         bg3.text_content('hed5250f0g98dag42efga79ag3b0d5fb8f44c', 1),
         constructor=bg3.dialog_object.QUESTION)
 
@@ -196,7 +199,7 @@ def patch_mizora_aftermath_scene() -> None:
     d.create_standard_dialog_node(
         youre_handsome_node_uuid,
         bg3.SPEAKER_SHADOWHEART,
-        [you_can_do_better_node_uuid],
+        [im_not_seeking_to_control_you_node_uuid],
         bg3.text_content('h1f7912b4g8b72g46ceg9e8bg8c9874f03472', 1),
         checkflags=(
             bg3.flag_group('Object', (
@@ -217,6 +220,54 @@ def patch_mizora_aftermath_scene() -> None:
         emotions = emotions)
     t.create_tl_shot('d0630fdf-f2f2-4e18-926b-2cc4a1d78500', 0.0, 5.5, j_cut_length=1, is_logic_enabled=True, companion_cameras=comp_cams)
     t.create_tl_shot('0a6eee54-6691-4483-87c9-1967d6c72a65', 5.5, 9.0)
+
+    # Don't be foolish - you're far too pretty to hate. I'll still pet you as much as you like.
+    d.create_standard_dialog_node(
+        youre_pretty_node_uuid,
+        bg3.SPEAKER_SHADOWHEART,
+        [im_not_seeking_to_control_you_node_uuid],
+        bg3.text_content('hd9da4525g93d3g45e4g89b1g36bbc09cae31', 1),
+        checkflags=(
+            bg3.flag_group('Object', (
+                bg3.flag(Tav_Regrets_Mizora_Romance.uuid, True, slot_idx_tav),
+            )),
+            bg3.flag_group('Tag', (
+                bg3.flag(bg3.TAG_FEMALE, True, slot_idx_tav),
+            )),
+        ))
+    emotions = {
+        bg3.SPEAKER_SHADOWHEART: ((0.0, 1024, None), (3.2, 2, None)),
+        bg3.SPEAKER_PLAYER: ((0.0, 1, 3), (6.7, 2, None))
+    }
+    t.create_new_voice_phase_from_another(
+        shadowheart_answer_node_uuid,
+        bg3.SPEAKER_SHADOWHEART,
+        7.891,
+        youre_pretty_node_uuid,
+        skip_tl_nodes = ('TLShot',),
+        phase_duration = 8.2,
+        emotions = emotions)
+    t.create_tl_shot('d0630fdf-f2f2-4e18-926b-2cc4a1d78500', 0.0, 5.0, j_cut_length=1, is_logic_enabled=True, companion_cameras=comp_cams)
+    t.create_tl_shot('0a6eee54-6691-4483-87c9-1967d6c72a65', 5.0, 8.2)
+
+    # I'm not seeking to control you. All I ask is a little... consideration.
+    d.create_standard_dialog_node(
+        im_not_seeking_to_control_you_node_uuid,
+        bg3.SPEAKER_SHADOWHEART,
+        [you_can_do_better_node_uuid],
+        bg3.text_content('h30b8b180gcc86g412cg9ff2g37a9462f42bb', 1))
+    emotions = {
+        bg3.SPEAKER_SHADOWHEART: ((0.0, 1024, None), (2.065, 1024, 1), (3.7, 1024, 2), (5.4, 1024, 3))
+    }
+    t.create_new_voice_phase_from_another(
+        shadowheart_answer_node_uuid,
+        bg3.SPEAKER_SHADOWHEART,
+        6.451,
+        im_not_seeking_to_control_you_node_uuid,
+        skip_tl_nodes = ('TLShot',),
+        phase_duration = 6.8,
+        emotions = emotions)
+    t.create_tl_shot('d0630fdf-f2f2-4e18-926b-2cc4a1d78500', 0.0, 6.8, j_cut_length=1, is_logic_enabled=True, companion_cameras=comp_cams)
 
     # That said, you can certainly do better then her. I should know.
     d.create_standard_dialog_node(
@@ -283,7 +334,7 @@ def patch_mizora_aftermath_scene() -> None:
     d.create_standard_dialog_node(
         opinions_easily_swayed_node_uuid,
         bg3.SPEAKER_SHADOWHEART,
-        [i_really_fell_for_you_node_uuid],
+        [theres_just_moments_node_uuid],
         bg3.text_content('h18f5f39dg5473g4079g8077g8d57c8209978', 1))
     emotions = {
         bg3.SPEAKER_SHADOWHEART: ((0.0, 4, None), (2.72, 4, 2)),
@@ -350,7 +401,7 @@ def patch_mizora_aftermath_scene() -> None:
     d.create_standard_dialog_node(
         dont_be_ridiculous_node_uuid,
         bg3.SPEAKER_SHADOWHEART,
-        [theres_just_moments_node_uuid],
+        [i_cant_trust_you_node_uuid],
         bg3.text_content('hd7eb9710g6c5bg4382gbb6fg711122508d0b', 1))
     emotions = {
         bg3.SPEAKER_SHADOWHEART: ((0.0, 1, 2), (1.72, 1, 3)),
@@ -369,7 +420,7 @@ def patch_mizora_aftermath_scene() -> None:
     d.create_standard_dialog_node(
         what_kind_of_question_node_uuid,
         bg3.SPEAKER_SHADOWHEART,
-        [theres_just_moments_node_uuid],
+        [i_cant_trust_you_node_uuid],
         bg3.text_content('h52f83b1ag8c8bg4561gaefeg1030db3594e3', 1))
     emotions = {
         bg3.SPEAKER_SHADOWHEART: ((0.0, 32, None), (2.2, 1, 3)),
@@ -383,6 +434,36 @@ def patch_mizora_aftermath_scene() -> None:
         phase_duration = 3.8,
         emotions = emotions)
     t.create_tl_shot('d0630fdf-f2f2-4e18-926b-2cc4a1d78500', 0.0, 3.8)
+
+    # I can't trust you, can I?
+    # You clearly can't be trusted.
+    d.create_standard_dialog_node(
+        i_cant_trust_you_node_uuid,
+        bg3.SPEAKER_SHADOWHEART,
+        [theres_just_moments_node_uuid],
+        bg3.text_content('hf13f4035g79ffg46f5g817eg966012bd471c', 1))
+        #bg3.text_content('hb4a70fe4ga6b8g449ag9cbbg03f6c252b7fb', 1))
+    emotions = {
+        bg3.SPEAKER_SHADOWHEART: ((0.0, 32, 0), (1.22, 2048, 0)),
+        bg3.SPEAKER_PLAYER: ((0.0, 1, None), (2.9, 2048, 0))
+    }
+    attitudes = {
+        bg3.SPEAKER_PLAYER: (
+            (2.6, 'fd6ca738-c675-4249-8755-07d0d7027251', '375d49d9-707a-42fb-a7f5-7bccba35a6ea', None),
+        ),
+    }
+    t.create_new_voice_phase_from_another(
+        shadowheart_answer_node_uuid,
+        bg3.SPEAKER_SHADOWHEART,
+        #1.97,
+        2.1,
+        i_cant_trust_you_node_uuid,
+        skip_tl_nodes = ('TLShot',),
+        phase_duration = 5.0,
+        emotions = emotions,
+        attitudes = attitudes)
+    t.create_tl_shot('d0630fdf-f2f2-4e18-926b-2cc4a1d78500', 0.0, 2.5, j_cut_length=1, is_logic_enabled=True, companion_cameras=comp_cams)
+    t.create_tl_shot('0a6eee54-6691-4483-87c9-1967d6c72a65', 2.5, 5.0)
 
 
     # It's not like I've been keeping a list of charges to throw at you. There's just... moments.

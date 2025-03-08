@@ -73,7 +73,7 @@ def patch_wyll_greetings() -> None:
         'bbf0bcb4-15d0-fd9a-b8f0-17030f09f8ab',
         checkflags=(
             bg3.flag_group('Object', (
-                bg3.flag(bg3.FLAG_Approval_AtLeast_Neg20_For_Sp2, True, slot_idx_wyll),
+                bg3.flag(bg3.FLAG_Approval_AtLeast_N20_For_Sp2, True, slot_idx_wyll),
             )),        
         ))
 

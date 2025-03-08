@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import os
+import os.path
 import xml.etree.ElementTree as et
 
 from ._common import get_bg3_attribute, get_required_bg3_attribute, new_random_uuid, set_bg3_attribute, to_compact_string
 from ._files import game_file
-from ._flags import flag, flag_group, flag_object
+from ._flags import flag, flag_group
 
 from typing import Iterable
 
@@ -101,6 +103,9 @@ class text_content:
                 <attribute id="CustomSequenceId" type="guid" value="{self.__custom_sequence_id}" />
                 <attribute id="stub" type="bool" value="True" /></node>\n""")
 
+class tagged_text_content:
+    pass
+
 class dialog_object:
     GREETING = 'TagGreeting'
     QUESTION = 'TagQuestion'
@@ -152,6 +157,15 @@ class dialog_object:
     @property
     def filename(self) -> str:
         return self.__file.relative_file_path
+
+    @property
+    def xml(self) -> et.ElementTree:
+        return self.__file.xml
+
+    @property
+    def name(self) -> str:
+        result = os.path.basename(self.__file.relative_file_path)
+        return result[:result.find('.')]
 
     def get_dialog_nodes(self, /, early_access: bool = False) -> list[et.Element]:
         if early_access:
@@ -462,6 +476,8 @@ class dialog_object:
             node_uuid: str,
             children: Iterable[str],
             /,
+            visual_state: bool = False,
+            speaker: str | None = None,
             tags: Iterable[et.Element] = [],
             setflags: Iterable[flag_group] = [],
             checkflags: Iterable[flag_group] = [],
@@ -475,9 +491,16 @@ class dialog_object:
     ) -> et.Element:
         result = list[str]()
         result.append('<node id="node" key="UUID">')
-        result.append('<attribute id="constructor" type="FixedString" value="TagCinematic" />')
+        if visual_state:
+            result.append('<attribute id="constructor" type="FixedString" value="Visual State" />')
+        else:
+            result.append('<attribute id="constructor" type="FixedString" value="TagCinematic" />')
         result.append(f'<attribute id="UUID" type="FixedString" value="{node_uuid}" />')
-        result.append('<attribute id="speaker" type="int32" value="-1" />')
+        if speaker is None:
+            result.append('<attribute id="speaker" type="int32" value="-1" />')
+        else:
+            speaker_index = self.get_speaker_slot_index(speaker)
+            result.append(f'<attribute id="speaker" type="int32" value="{speaker_index}" />')        
         if transition_mode:
             result.append('<attribute id="transitionmode" type="uint8" value="2" />')
         if show_once:
@@ -550,12 +573,14 @@ class dialog_object:
             node_uuid: str,
             source_node_uuid: str,
             children: Iterable[str],
+            /,
             tags: Iterable[et.Element] = [],
             setflags: Iterable[flag_group] = [],
             checkflags: Iterable[flag_group] = [],
             show_once: bool = False,
             root: bool = False,
-            end_node: bool = False
+            end_node: bool = False,
+            approval_rating_uuid: str | None = None,
     ) -> et.Element:
         result = list[str]()
         result.append('<node id="node" key="UUID">')
@@ -567,6 +592,8 @@ class dialog_object:
             result.append('<attribute id="Root" type="bool" value="True" />')
         if end_node:
             result.append('<attribute id="endnode" type="bool" value="True" />')
+        if approval_rating_uuid:
+            result.append(f'<attribute id="ApprovalRatingID" type="guid" value="{approval_rating_uuid}" />')
         result.append('<attribute id="speaker" type="int32" value="-1" />')
         result.append(f'<attribute id="SourceNode" type="FixedString" value="{source_node_uuid}" />')
         result.append('<children>')
@@ -707,7 +734,7 @@ class dialog_object:
             result.append('<node id="checkflags" />')
         else:
             result.append('<node id="checkflags"><children>')
-            for f in setflags:
+            for f in checkflags:
                 result.append(to_compact_string(f.to_xml()))
             result.append('</children></node>')
         if not passive:

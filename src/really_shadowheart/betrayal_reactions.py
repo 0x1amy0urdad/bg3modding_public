@@ -211,13 +211,13 @@ def create_betrayal_reactions() -> None:
     t.create_new_voice_phase_from_another(
         'ac29f78b-5ec6-061a-96bc-e28522897479',
         bg3.SPEAKER_KARLACH,
-        8,
+        8.0,
         karlach_leaves_the_party_node1_uuid,
         skip_tl_nodes = ('TLShot',),
         emotions = {
             bg3.SPEAKER_KARLACH: ((0.0, 4, None), (1.2, 64, None), (2.06, 1, None), (3.45, 4, 1)),
         })
-    t.create_tl_shot('94b10096-c9d4-4f64-a52f-41a416235e6f', 0.0, 8)
+    t.create_tl_shot('94b10096-c9d4-4f64-a52f-41a416235e6f', 0.0, 8.0)
 
     # I was wrong to think there could've been something between us. We're just too different.
     d.create_standard_dialog_node(
@@ -417,11 +417,11 @@ def create_betrayal_reactions() -> None:
         7.4531,
         wyll_turns_hostile_node3_uuid,
         skip_tl_nodes = ('TLShot',),
-        phase_duration = 8,
+        phase_duration = 8.0,
         emotions = {
             bg3.SPEAKER_WYLL: ((0.0, 16, None), (4.2, 8, 2)),
         })
-    t.create_tl_shot('29b25589-d19a-4fdd-ab27-0d84fb565742', 0.0, 8)
+    t.create_tl_shot('29b25589-d19a-4fdd-ab27-0d84fb565742', 0.0, 8.0)
 
     # Traitor. The Blade now comes for <i>you</i>.
     d.create_standard_dialog_node(

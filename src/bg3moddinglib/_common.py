@@ -36,16 +36,43 @@ def get_required_bg3_attribute(node: et.Element, attribute_name: str, /, value_n
         raise ValueError(f"required BG3 attribute {attribute_name} doesn't have a value")
     return value
 
-def set_bg3_attribute(node: et.Element, attribute_name: str, attribute_value: str, /, attribute_type: str = "") -> None:
+def get_bg3_handle_attribute(node: et.Element, attribute_name: str, /, value_name: str | None = None) -> tuple[str, int]:
+    attribute_node = node.find(f'./attribute[@id="{attribute_name}"]')
+    if attribute_node is None:
+        raise ValueError(f"required BG3 attribute {attribute_name} doesn't exist")
+    effective_value_name = "handle" if value_name is None else value_name
+    value = attribute_node.get(effective_value_name)
+    if value is None:
+        raise ValueError(f"required BG3 attribute {attribute_name} doesn't have a value")
+    version = int(attribute_node.get('version'))
+    return (value, version)
+
+def set_bg3_attribute(
+        node: et.Element,
+        attribute_name: str,
+        attribute_value: str,
+        /,
+        attribute_type: str = "",
+        version: int | None = None
+    ) -> None:
     attribute_node = node.find(f'./attribute[@id="{attribute_name}"]')
     if attribute_node is None:
         if not attribute_type:
             raise ValueError(f"attribute type is required to create a new attribute {attribute_name}")
-        node.append(et.fromstring(f'<attribute id="{attribute_name}" type="{attribute_type}" value="{attribute_value}" />'))
+        if version is not None:
+            attribute_node = et.fromstring(f'<attribute id="{attribute_name}" type="{attribute_type}" handle="{attribute_value} version="{version}" />')
+            attribute_node.set('version', str(version))
+        else:
+            attribute_node = et.fromstring(f'<attribute id="{attribute_name}" type="{attribute_type}" value="{attribute_value}" />')
+        node.append(attribute_node)
     else:
         if attribute_type:
             attribute_node.set("type", attribute_type)
-        attribute_node.set("value", attribute_value)
+        if version is not None:
+            attribute_node.set("handle", attribute_value)
+            attribute_node.set("version", str(version))
+        else:
+            attribute_node.set("value", attribute_value)
 
 def has_bg3_attribute(node: et.Element, attribute_name: str) -> bool:
     return node.find(f'./attribute[@id="{attribute_name}"]') is not None

@@ -169,6 +169,14 @@ class game_files:
             if dir_entry.is_dir():
                 shutil.copytree(dir_entry.path, os.path.join(dest_path, dir_entry.name), dirs_exist_ok=True)
 
+    def copy_osiris_goals(self, source_path: str) -> None:
+        if not os.path.isdir(source_path):
+            raise ValueError("not a directory path: " + source_path)
+        if os.path.isdir(os.path.join(source_path, "Story")):
+            osi_dir_path = os.path.join(self.__output_dir_path, "Mods", self.__mod_name, "Story")
+            os.makedirs(osi_dir_path, exist_ok=True)
+            shutil.copytree(os.path.join(source_path, "Story"), osi_dir_path, dirs_exist_ok=True)
+
     def copy_script_extender_lua_files(self, source_path: str) -> None:
         if not os.path.isdir(source_path):
             raise ValueError("not a directory path: " + source_path)
@@ -294,7 +302,7 @@ class game_files:
 </save>
 """
         meta_lsx_path = os.path.join(self.__output_dir_path, "Mods", self.__mod_name, "meta.lsx")
-        os.makedirs(os.path.dirname(meta_lsx_path), exist_ok=True)
+        os.makedirs(os.path.dirname(meta_lsx_path), exist_ok = True)
         with open(meta_lsx_path, "wt") as f:
             f.write(meta_lsx)
 
@@ -319,50 +327,71 @@ class game_files:
         with open(info_json_path, "wt") as f:
             json.dump(info_json, f)
 
-    def build(self, preview: bool = True, verbose: bool = False) -> str:
+    def build(self, /, preview: bool = True, verbose: bool = False, lua_overrides: bool = False) -> str:
+        if lua_overrides:
+            prefix = os.path.join("Mods", self.__mod_name)
+            output_dir_path = os.path.join(self.__output_dir_path, prefix)
+            preview_dir_path = os.path.join(self.__preview_dir_path, prefix)
+        else:
+            prefix = ""
+            output_dir_path = self.__output_dir_path
+            preview_dir_path = self.__preview_dir_path
+        os.makedirs(output_dir_path, exist_ok = True)
+        os.makedirs(preview_dir_path, exist_ok = True)
+        lua_overrides_lines = list[str]()
         for gf in self.__files.values():
             relative_file_path = translate_path(gf.relative_file_path)
             if verbose:
-                sys.stdout.write(f"Processing {relative_file_path} .")
+                sys.stdout.write(f"Processing {relative_file_path} ")
             match gf.file_format:
                 case "lsj":
                     raise RuntimeError(".lsj files are not supported")
                 case "lsf":
+                    if verbose:
+                        sys.stdout.write(" as lsf file .")
                     et.indent(gf.xml.getroot())
                     if preview:
-                        preview_file_path = os.path.join(self.__preview_dir_path, relative_file_path) + '.lsx'
+                        preview_file_path = os.path.join(preview_dir_path, relative_file_path) + '.lsx'
                         os.makedirs(os.path.dirname(preview_file_path), exist_ok=True)
                         if verbose:
                             sys.stdout.write('.')
                         gf.xml.write(preview_file_path, encoding="utf-8", xml_declaration=True)
                         if verbose:
                             sys.stdout.write('.')
-                    lsx_file_path = os.path.join(self.__output_dir_path, relative_file_path) + '.lsx'
+                    lsx_file_path = os.path.join(output_dir_path, relative_file_path) + '.lsx'
                     os.makedirs(os.path.dirname(lsx_file_path), exist_ok=True)
                     gf.xml.write(lsx_file_path, encoding="utf-8", xml_declaration=True)
                     if verbose:
                         sys.stdout.write('.')
                     self.__tool.convert_lsx_to_lsf(lsx_file_path)
+                    if lua_overrides:
+                        lua_overrides_lines.append(f'Ext.IO.AddPathOverride("{relative_file_path}", "{os.path.join(prefix, relative_file_path)}")')
                     if verbose:
                         sys.stdout.write('. done\n')
                 case "lsx":
+                    if verbose:
+                        sys.stdout.write(" as lsx file .")
                     et.indent(gf.xml.getroot())
                     if preview:
-                        preview_file_path = os.path.join(self.__preview_dir_path, relative_file_path)
+                        preview_file_path = os.path.join(preview_dir_path, relative_file_path)
                         os.makedirs(os.path.dirname(preview_file_path), exist_ok=True)
                         if verbose:
                             sys.stdout.write('.')
                         gf.xml.write(preview_file_path, encoding="utf-8", xml_declaration=True)
                         if verbose:
                             sys.stdout.write('.')
-                    lsx_file_path = os.path.join(self.__output_dir_path, relative_file_path)
+                    lsx_file_path = os.path.join(output_dir_path, relative_file_path)
                     os.makedirs(os.path.dirname(lsx_file_path), exist_ok=True)
                     if verbose:
                         sys.stdout.write('.')
                     gf.xml.write(lsx_file_path, encoding="utf-8", xml_declaration=True)
+                    if lua_overrides:
+                        lua_overrides_lines.append(f'Ext.IO.AddPathOverride("{relative_file_path}", "{os.path.join(prefix, relative_file_path)}")')
                     if verbose:
                         sys.stdout.write('. done\n')
                 case "loca":
+                    if verbose:
+                        sys.stdout.write(" as loca file .")
                     et.indent(gf.xml.getroot())
                     if preview:
                         preview_file_path = os.path.join(self.__preview_dir_path, relative_file_path) + '.xml'
@@ -379,28 +408,50 @@ class game_files:
                     if verbose:
                         sys.stdout.write('. done\n')
                 case "other":
-                    file_path = os.path.join(self.__output_dir_path, relative_file_path)
+                    if verbose:
+                        sys.stdout.write(" as other file .")
+                    if preview:
+                        preview_file_path = os.path.join(preview_dir_path, relative_file_path)
+                        os.makedirs(os.path.dirname(preview_file_path), exist_ok=True)
+                    file_path = os.path.join(output_dir_path, relative_file_path)
                     os.makedirs(os.path.dirname(file_path), exist_ok=True)
                     src_ext = os.path.splitext(gf.unpacked_file_path)[1]
                     dest_ext = os.path.splitext(file_path)[1]
                     if src_ext == '.lsx' and dest_ext == '.lsf':
+                        if preview:
+                            shutil.copy(gf.unpacked_file_path, preview_file_path)
                         shutil.copy(gf.unpacked_file_path, file_path + '.lsx')
                         if verbose:
                             sys.stdout.write('.')
                         self.__tool.convert_lsx_to_lsf(file_path + '.lsx')
                     elif src_ext == '.xml' and dest_ext == '.loca':
+                        if preview:
+                            shutil.copy(gf.unpacked_file_path, preview_file_path)
                         shutil.copy(gf.unpacked_file_path, file_path + '.xml')
                         if verbose:
                             sys.stdout.write('.')
                         self.__tool.convert_xml_to_loca(file_path + '.xml')
                     elif src_ext == dest_ext:
+                        if preview:
+                            shutil.copy(gf.unpacked_file_path, preview_file_path)
                         shutil.copy(gf.unpacked_file_path, file_path)
                     else:
                         raise RuntimeError(f"failed to process an external file {gf.unpacked_file_path} with target relative path {gf.relative_file_path}")
                     if verbose:
                         sys.stdout.write('. done\n')
+                    if lua_overrides:
+                        lua_overrides_lines.append(f'Ext.IO.AddPathOverride("{relative_file_path}", "{os.path.join(prefix, relative_file_path)}")')
                 case unknown_format:
                     raise ValueError(F"Unknown file format: {unknown_format}")
+        if lua_overrides:
+            if verbose:
+                sys.stdout.write('Creating lua overrides .')
+            server_overrides_lua = os.path.join(self.__output_dir_path, prefix, "ScriptExtender", "Lua", "BootstrapClient.lua")
+            game_files.generate_lua_io_overrides(server_overrides_lua, lua_overrides_lines)
+            client_overrides_lua = os.path.join(self.__output_dir_path, prefix, "ScriptExtender", "Lua", "BootstrapServer.lua")
+            game_files.generate_lua_io_overrides(client_overrides_lua, lua_overrides_lines)
+            if verbose:
+                sys.stdout.write('. done\n')
         if verbose:
             sys.stdout.write('Generating the .pak file .')
         pak_file = self.__tool.pack(self.__output_dir_path, os.path.join(self.__output_dir_path, self.__mod_name + ".pak"))
@@ -418,3 +469,20 @@ class game_files:
         if verbose:
             sys.stdout.write('. done\n')
         self.create_info_json(md5_hash)
+
+    @staticmethod
+    def generate_lua_io_overrides(lua_overrides_file_path: str, lua_overrides_lines: list[str]) -> None:
+        if not os.path.isfile(lua_overrides_file_path):
+            raise FileNotFoundError(f"Lua overrides file not found at {lua_overrides_file_path}")
+        with open(lua_overrides_file_path, "rt") as f:
+            lines = f.readlines()
+        with open(lua_overrides_file_path, "wt") as f:
+            for line in lines:
+                if '-- Autogenerated IO path overrides' in line:
+                    f.write(line)
+                    for override_line in lua_overrides_lines:
+                        f.write('    ')
+                        f.write(override_line.replace('\\', '/'))
+                        f.write("\n")
+                else:
+                    f.write(line)

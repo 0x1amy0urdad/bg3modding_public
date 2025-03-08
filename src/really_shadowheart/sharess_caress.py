@@ -6,6 +6,67 @@ from .build import add_build_procedure
 from .context import files
 from .flags import *
 
+def patch_dapper_drow_intimacy() -> None:
+    ##############################################################################################
+    # Dialog: WYR_DapperDrow_SiblingsThreeWay.lsf
+    ##############################################################################################
+
+    # e808c0d5-8c1a-186b-970f-9b13f49dd02c, hired brother, 1st time
+    # a14d0f3c-41fa-b72d-72b3-b44769ba4b30, hired sister, 1st time
+    # 580023b9-b5bf-4266-8c75-2a4424d3e761, hired both, 1st time
+    # 8d2c44ef-3b93-e385-fde6-dd76d9c78806, hired both, again
+    # 2d9df113-4ae2-96dc-f456-5d546a9b0c35, hired sister, again
+    # b249b3f2-9427-5e27-57c1-ed9d2e3b6f02, hired brother, again
+
+    d = bg3.dialog_object(files.get_file('Gustav', 'Mods/GustavDev/Story/DialogsBinary/Act3/Wyrm/WYR_DapperDrow_Intimacy.lsf'))
+
+    speaker_idx_tav = d.get_speaker_slot_index(bg3.SPEAKER_PLAYER)
+    speaker_idx_shadowheart = d.get_speaker_slot_index(bg3.SPEAKER_SHADOWHEART)
+
+    cheated_on_shadowheart_node_uuid = 'd439d6d9-9d2f-4221-8cb4-249f46fc747c'
+    not_cheated_on_shadowheart_node_uuid = 'b0a2d593-9588-4602-ae9b-18a3d91d374d'
+    end_cinematic_node_uuid = '7146fdf3-2ee8-6e25-8952-22b7e33882cd' # existing node
+    
+    hired_brother_1st_time_node_uuid = 'e808c0d5-8c1a-186b-970f-9b13f49dd02c'
+    hired_sister_1st_time_node_uuid = 'a14d0f3c-41fa-b72d-72b3-b44769ba4b30'
+    hired_both_1st_time_node_uuid = '580023b9-b5bf-4266-8c75-2a4424d3e761'
+    hired_both_again_node_uuid = '8d2c44ef-3b93-e385-fde6-dd76d9c78806'
+    hired_sister_again_node_uuid = '2d9df113-4ae2-96dc-f456-5d546a9b0c35'
+    hired_brother_again_node_uuid = 'b249b3f2-9427-5e27-57c1-ed9d2e3b6f02'
+
+    d.remove_dialog_attribute(end_cinematic_node_uuid, "endnode")
+    d.add_child_dialog_node(end_cinematic_node_uuid, cheated_on_shadowheart_node_uuid)
+    d.add_child_dialog_node(end_cinematic_node_uuid, not_cheated_on_shadowheart_node_uuid)
+
+    d.create_standard_dialog_node(
+        cheated_on_shadowheart_node_uuid,
+        bg3.SPEAKER_PLAYER,
+        [],
+        None,
+        constructor = bg3.dialog_object.ANSWER,
+        end_node = True,
+        checkflags = (
+            bg3.flag_group('Tag', (
+                bg3.flag(bg3.TAG_REALLY_SHADOWHEART, False, speaker_idx_shadowheart),
+            )),
+            bg3.flag_group('Global', (
+                bg3.flag(bg3.FLAG_ORI_Shadowheart_State_EnemyOfSharPath, True, None),
+            ))
+        ),
+        setflags = (
+            bg3.flag_group('Object', (
+                bg3.flag(Cheated_On_Shadowheart.uuid, True, speaker_idx_tav),
+                bg3.flag(Shadowheart_Has_Doubts_About_Tav.uuid, True, speaker_idx_tav)
+            )),
+        ))
+    d.create_standard_dialog_node(
+        not_cheated_on_shadowheart_node_uuid,
+        bg3.SPEAKER_PLAYER,
+        [],
+        None,
+        constructor = bg3.dialog_object.ANSWER,
+        end_node = True)
+
 def patch_sharess_caress() -> None:
     ##############################################################################################
     # Dialog: WYR_DapperDrow_SiblingsThreeWay.lsf
@@ -17,6 +78,7 @@ def patch_sharess_caress() -> None:
     # speaker slot indexes
     slot_idx_shadowheart = d.get_speaker_slot_index(bg3.SPEAKER_SHADOWHEART)
     slot_idx_tav = d.get_speaker_slot_index(bg3.SPEAKER_PLAYER)
+    slot_idx_the_creep = d.get_speaker_slot_index(bg3.SPEAKER_HALSIN)
 
     # flags
     shadowheart_enemy_of_shar_true = bg3.flag_group('Global', (bg3.flag(bg3.FLAG_ORI_Shadowheart_State_EnemyOfSharPath, True, None),))
@@ -28,12 +90,12 @@ def patch_sharess_caress() -> None:
     handled_breakup_true = bg3.flag_group('Object', (bg3.flag(bg3.FLAG_ORI_State_HandledBreakupWithShadowheart, True, slot_idx_tav),))
     really_shadowheart_true = bg3.flag_group('Tag', (bg3.flag(bg3.TAG_REALLY_SHADOWHEART, True, slot_idx_shadowheart),))
     shadowheart_goes_to_camp = bg3.flag_group('Object', (bg3.flag(bg3.FLAG_OriginRemoveFromPartyAfterDialog, True, slot_idx_shadowheart),))
-    tav_promise_true = bg3.flag_group('Object', (bg3.flag(ORI_State_DontHireDapperDrowPromise.uuid, True, slot_idx_shadowheart),))
-    tav_promise_false = bg3.flag_group('Object', (bg3.flag(ORI_State_DontHireDapperDrowPromise.uuid, False, slot_idx_shadowheart),))
-    tav_rejected_drow_3some_true = bg3.flag_group('Object', (bg3.flag(ORI_State_RejectedDapperDrow3some.uuid, True, slot_idx_tav),))
-    tav_rejected_drow_3some_false = bg3.flag_group('Object', (bg3.flag(ORI_State_RejectedDapperDrow3some.uuid, False, slot_idx_tav),))
-    tav_rejected_drow_true = bg3.flag_group('Object', (bg3.flag(ORI_State_RejectedDapperDrow.uuid, True, slot_idx_tav),))
-    tav_rejected_drow_false = bg3.flag_group('Object', (bg3.flag(ORI_State_RejectedDapperDrow.uuid, False, slot_idx_tav),))
+    tav_promise_true = bg3.flag_group('Object', (bg3.flag(Shadowheart_State_DontHireDapperDrowPromise.uuid, True, slot_idx_shadowheart),))
+    tav_promise_false = bg3.flag_group('Object', (bg3.flag(Shadowheart_State_DontHireDapperDrowPromise.uuid, False, slot_idx_shadowheart),))
+    tav_rejected_drow_3some_true = bg3.flag_group('Object', (bg3.flag(Shadowheart_State_RejectedDapperDrow3some.uuid, True, slot_idx_tav),))
+    tav_rejected_drow_3some_false = bg3.flag_group('Object', (bg3.flag(Shadowheart_State_RejectedDapperDrow3some.uuid, False, slot_idx_tav),))
+    tav_rejected_drow_true = bg3.flag_group('Object', (bg3.flag(Shadowheart_State_RejectedDapperDrow.uuid, True, slot_idx_tav),))
+    tav_rejected_drow_false = bg3.flag_group('Object', (bg3.flag(Shadowheart_State_RejectedDapperDrow.uuid, False, slot_idx_tav),))
 
     # dialog uuids, existing dialogs
     id_like_you_all_to_myself_node_uuid = '42eabadc-bf51-6129-f4f7-e79718020fef'
@@ -45,17 +107,14 @@ def patch_sharess_caress() -> None:
     id_like_to_hire_my_lady_node_uuid = '49b95aec-c693-2332-1874-9aa1a65d37f4'
     i_want_to_hire_lad_node_uuid = '18138b2a-618f-28dc-7b62-90a7dfb46135'
     id_like_to_spend_time_lady_nym_node_uuid = 'fccddc42-f0a1-e4e0-18d2-4e2c68dbdd0a'
+    halsin_interjection_node_uuid = 'be20dd65-bb29-9f58-1295-eb25179240b1'
 
     #dialog uuids, new dialogs
     entry_point_node_uuid = '1248ea3a-a035-4944-80f2-b4d3a3752486'
     partner_reaction_hub_node_uuid = '8c62a0da-1341-e527-91d9-9fe9a960cd47'
     just_like_that_node_uuid = '1f836a58-db44-4b04-8f97-6a9a0361324a'
     deception_node_uuid = '20ae75a9-5abd-4b10-b233-3e867dbaf39d'
-    deception_success_node_uuid = '3f1e941d-77e1-4625-9612-dfd81f0403b9'
-    deception_failure_node_uuid = 'a1ba021c-571e-43bf-8022-9c3db48c9897'
     persuasion_node_uuid = '2bd1be3b-7b34-4ef1-96e6-58a6813cf153'
-    persuasion_success_node_uuid = '44601422-dbc0-4df1-964e-0b32d9c594f4'
-    persuasion_failure_node_uuid = '73a44813-57d7-4c86-bc0f-6133ef0ffa93'
     lets_drop_this_node_uuid = '7d411d40-89d2-4e4d-b773-8a6c05a22016'
     cut_you_loose_node_uuid = 'aa037df5-0825-4f52-8cbf-6783c29df1f3'
     dont_do_this_again_node_uuid = '5a598edd-3495-4240-84c7-3e2178f698a0'
@@ -71,12 +130,13 @@ def patch_sharess_caress() -> None:
     way_to_end_things_uuid = '4b9bf0a2-4058-4a7e-8b6b-9649990fc814'
     what_do_you_mean_uuid = '7f30d6cf-1481-4db1-8510-3435005813b9'
     arent_dear_friends_uuid = 'ceacb4b7-6db1-4952-8a00-e4fad3ec0e78'
+    i_dont_have_to_explain_uuid = '91f4387b-9b01-491a-8a18-390143bc55cd'
 
     # Negative impact to approval rating
     set_zero_approval_true = bg3.flag_group('Object', (bg3.flag(Shadowheart_Approval_Set_To_Zero.uuid, True, slot_idx_tav),))
-    set_neutral_approval_true = bg3.flag_group('Object', (bg3.flag(Shadowheart_Approval_Set_To_Neutral.uuid, True, slot_idx_tav),))
+    #set_neutral_approval_true = bg3.flag_group('Object', (bg3.flag(Shadowheart_Approval_Set_To_Neutral.uuid, True, slot_idx_tav),))
     set_low_approval_true = bg3.flag_group('Object', (bg3.flag(Shadowheart_Approval_Set_To_Low.uuid, True, slot_idx_tav),))
-    set_very_low_approval_true = bg3.flag_group('Object', (bg3.flag(Shadowheart_Approval_Set_To_VeryLow.uuid, True, slot_idx_tav),))
+    #set_very_low_approval_true = bg3.flag_group('Object', (bg3.flag(Shadowheart_Approval_Set_To_VeryLow.uuid, True, slot_idx_tav),))
 
 
     # Camera that looks at Shadowheart
@@ -90,11 +150,27 @@ def patch_sharess_caress() -> None:
             j_cut_length=1,
             companion_cameras=('81b6ede6-3f4b-4caf-910b-3dd142f0b98b', '26949517-f0f4-4689-ae37-b94fe68dfee9', 'd3e056d9-f660-4ab7-b766-6aaff02b7c78'))
 
+    # This prevents Halsin's "more company" line in the drow siblings convo if Tav didn't start a secondary relationship with him.
+    d.set_dialog_flags(halsin_interjection_node_uuid, checkflags = (
+        bg3.flag_group('Tag', (
+            bg3.flag(bg3.TAG_REALLY_HALSIN, True, slot_idx_the_creep),
+        )),
+        bg3.flag_group('Object', (
+            bg3.flag(bg3.FLAG_ORI_State_PartneredWithHalsinSecondary, True, slot_idx_tav),
+        )),
+    ))
 
     # Selune Shadowheart always rejects 3some with drows
 
     # While it's a fascinating prospect, I'd like you all to myself...
-    d.set_dialog_flags(id_like_you_all_to_myself_node_uuid, checkflags=(shadowheart_enemy_of_shar_true, tav_partnered_true))
+    d.set_dialog_flags(id_like_you_all_to_myself_node_uuid, checkflags = (
+        bg3.flag_group('Global', (
+            bg3.flag(bg3.FLAG_ORI_Shadowheart_State_EnemyOfSharPath, True, None),
+        )),
+        bg3.flag_group('Object', (
+            bg3.flag(bg3.FLAG_ORI_State_PartneredWithShadowheart, True, slot_idx_tav),
+        ))
+    ))
     d.set_tagged_text(id_like_you_all_to_myself_node_uuid, bg3.text_content('h7b905a4fgda7dg4417g9c24g768f4ef486e4', 1))
 
     # Timeline: re-use the existing one, but change it a bit
@@ -112,20 +188,56 @@ def patch_sharess_caress() -> None:
     bg3.set_bg3_attribute(tl_show_visual_keys[1], 'Time', str(end_time))
 
     # Block the 3some option after the conversation
-    d.set_dialog_flags(i_feel_the_same_way_node_uuid, setflags=(tav_rejected_drow_3some_true,))
-    d.set_dialog_flags(forget_i_said_node_uuid, setflags=(tav_rejected_drow_3some_true,))
+    d.set_dialog_flags(i_feel_the_same_way_node_uuid, setflags = (
+        bg3.flag_group('Object', (
+            bg3.flag(Shadowheart_State_RejectedDapperDrow3some.uuid, True, slot_idx_tav),
+        )),
+    ))
+    d.set_dialog_flags(forget_i_said_node_uuid, setflags = (
+        bg3.flag_group('Object', (
+            bg3.flag(Shadowheart_State_RejectedDapperDrow3some.uuid, True, slot_idx_tav),
+        )),
+    ))
 
     # Allow hiring drow twins only if Tav didn't reject this idea
-    d.set_dialog_flags(id_like_to_hire_both_node_uuid, checkflags=(tav_rejected_drow_3some_false,))
-    d.set_dialog_flags(id_like_to_hire_my_lady_node_uuid, checkflags=(tav_rejected_drow_false,))
-    d.set_dialog_flags(i_want_to_hire_lad_node_uuid, checkflags=(tav_rejected_drow_false,))
-    d.set_dialog_flags(id_like_to_spend_time_lady_nym_node_uuid, checkflags=(tav_rejected_drow_false,))
+    d.set_dialog_flags(id_like_to_hire_both_node_uuid, checkflags = (
+        bg3.flag_group('Object', (bg3.flag(Shadowheart_State_RejectedDapperDrow3some.uuid, False, slot_idx_tav),)),
+    ))
+    d.set_dialog_flags(id_like_to_hire_my_lady_node_uuid, checkflags = (
+        bg3.flag_group('Object', (
+            bg3.flag(Shadowheart_State_RejectedDapperDrow.uuid, False, slot_idx_tav),
+        )),
+    ))
+    d.set_dialog_flags(i_want_to_hire_lad_node_uuid, checkflags = (
+        bg3.flag_group('Object', (
+            bg3.flag(Shadowheart_State_RejectedDapperDrow.uuid, False, slot_idx_tav),
+        )),
+    ))
+    d.set_dialog_flags(id_like_to_spend_time_lady_nym_node_uuid, checkflags = (
+        bg3.flag_group('Object', (
+            bg3.flag(Shadowheart_State_RejectedDapperDrow.uuid, False, slot_idx_tav),
+        )),
+    ))
 
     # Shar Shadowheart always agrees to 3some with drows
-    d.set_dialog_flags(theres_an_idea_node_uuid, checkflags=(shadowheart_chosen_of_shar_true, tav_partnered_true))
+    d.set_dialog_flags(theres_an_idea_node_uuid, checkflags = (
+        bg3.flag_group('Global', (
+            bg3.flag(bg3.FLAG_ORI_Shadowheart_State_SharPath, True, None),
+        )),
+        bg3.flag_group('Object', (
+            bg3.flag(bg3.FLAG_ORI_State_PartneredWithShadowheart, True, slot_idx_tav),
+        ))
+    ))
 
     # Shar Shadowheart doesn't mind Tav hiring drows without her
-    d.set_dialog_flags(should_i_be_jelous_node_uuid, checkflags=(shadowheart_chosen_of_shar_true, tav_partnered_true))
+    d.set_dialog_flags(should_i_be_jelous_node_uuid, checkflags = (
+        bg3.flag_group('Global', (
+            bg3.flag(bg3.FLAG_ORI_Shadowheart_State_SharPath, True, None),
+        )),
+        bg3.flag_group('Object', (
+            bg3.flag(bg3.FLAG_ORI_State_PartneredWithShadowheart, True, slot_idx_tav),
+        ))
+    ))
 
     # Partners always react to hiring drow twins
     d.remove_dialog_attribute(partner_reaction_hub_node_uuid, 'transitionmode')
@@ -141,7 +253,14 @@ def patch_sharess_caress() -> None:
         bg3.SPEAKER_SHADOWHEART,
         [just_like_that_node_uuid, your_affections_drifted_uuid, should_i_be_jelous_node_uuid],
         None,
-        checkflags=(tav_partnered_true,))
+        checkflags = (
+            bg3.flag_group('Tag', (
+                bg3.flag(bg3.TAG_REALLY_SHADOWHEART, True, slot_idx_shadowheart),
+            )),
+            bg3.flag_group('Object', (
+                bg3.flag(bg3.FLAG_ORI_State_PartneredWithShadowheart, True, slot_idx_tav),
+            ))
+        ))
 
     # Just like that...? I thought we had something special. Something lasting.
     d.create_standard_dialog_node(
@@ -149,7 +268,18 @@ def patch_sharess_caress() -> None:
         bg3.SPEAKER_SHADOWHEART,
         [deception_node_uuid, persuasion_node_uuid, lets_drop_this_node_uuid],
         bg3.text_content('h656ea716g6c7fg4810g9a40g7a4faf11bd91', 1),
-        checkflags=(shadowheart_enemy_of_shar_true, tav_partnered_true, really_shadowheart_true, tav_promise_false))
+        checkflags = (
+            bg3.flag_group('Global', (
+                bg3.flag(bg3.FLAG_ORI_Shadowheart_State_EnemyOfSharPath, True, None),
+            )),
+            bg3.flag_group('Object', (
+                bg3.flag(bg3.FLAG_ORI_State_PartneredWithShadowheart, True, slot_idx_tav),
+                bg3.flag(Shadowheart_State_DontHireDapperDrowPromise.uuid, False, slot_idx_shadowheart),
+            )),
+            bg3.flag_group('Tag', (
+                bg3.flag(bg3.TAG_REALLY_SHADOWHEART, True, slot_idx_shadowheart),
+            )),
+        ))
     t.create_simple_dialog_answer_phase(
         bg3.SPEAKER_SHADOWHEART,
         6.75,
@@ -170,7 +300,11 @@ def patch_sharess_caress() -> None:
         [cut_you_loose_node_uuid],
         bg3.text_content('hfd18944dg9b68g4093ga62bg4718589a098a', 1),
         constructor=bg3.dialog_object.QUESTION,
-        setflags=(tav_rejected_drow_true,))
+        setflags=(
+            bg3.flag_group('Object', (
+                bg3.flag(Shadowheart_State_RejectedDapperDrow.uuid, True, slot_idx_tav),
+            )),
+        ))
 
     # Fine. But understand that I'll cut you loose the moment I have to.
     d.create_standard_dialog_node(
@@ -178,7 +312,11 @@ def patch_sharess_caress() -> None:
         bg3.SPEAKER_SHADOWHEART,
         [],
         bg3.text_content('ha090154fg5825g4e2bg8e91g6f160fa5e992', 1),
-        setflags=(tav_promise_true,),
+        setflags=(
+            bg3.flag_group('Object', (
+                bg3.flag(Shadowheart_State_DontHireDapperDrowPromise.uuid, True, slot_idx_shadowheart),
+            )),
+        ),
         end_node=True)
     t.create_simple_dialog_answer_phase(
         bg3.SPEAKER_SHADOWHEART,
@@ -208,7 +346,11 @@ def patch_sharess_caress() -> None:
         bg3.SPEAKER_SHADOWHEART,
         [],
         bg3.text_content('h6f3bfd2agf0d5g4e74g9420g1e59d78b5047', 1),
-        setflags=(tav_promise_true,),
+        setflags=(
+            bg3.flag_group('Object', (
+                bg3.flag(Shadowheart_State_DontHireDapperDrowPromise.uuid, True, slot_idx_shadowheart),
+            )),
+        ),
         end_node=True)
     t.create_simple_dialog_answer_phase(
         bg3.SPEAKER_SHADOWHEART,
@@ -226,7 +368,12 @@ def patch_sharess_caress() -> None:
         bg3.SPEAKER_SHADOWHEART,
         [best_leave_me_alone_uuid],
         bg3.text_content('hd86ce9a8g7a59g49ddgad72g6f87d1c370dd', 1),
-        setflags=(tav_promise_true, set_zero_approval_true))
+        setflags=(
+            bg3.flag_group('Object', (
+                bg3.flag(Shadowheart_State_DontHireDapperDrowPromise.uuid, True, slot_idx_shadowheart),
+                bg3.flag(Shadowheart_Approval_Set_To_Zero.uuid, True, slot_idx_tav),
+            )),
+        ))
     t.create_simple_dialog_answer_phase(
         bg3.SPEAKER_SHADOWHEART,
         5.338,
@@ -246,7 +393,12 @@ def patch_sharess_caress() -> None:
         bg3.SPEAKER_SHADOWHEART,
         [],
         bg3.text_content('hb7c3b03bg7d22g41dag989dgae8d9c2223f4', 1),
-        setflags=(shadowheart_goes_to_camp,),
+        setflags = (
+            bg3.flag_group('Object', (
+                bg3.flag(Shadowheart_Has_Doubts_About_Tav.uuid, True, slot_idx_tav),
+                bg3.flag(bg3.FLAG_OriginRemoveFromPartyAfterDialog, True, slot_idx_shadowheart),
+            )),
+        ),
         end_node=True)
     t.create_simple_dialog_answer_phase(
         bg3.SPEAKER_SHADOWHEART,
@@ -283,7 +435,7 @@ def patch_sharess_caress() -> None:
         spare_lover_uuid,
         (),
         emotions={
-            bg3.SPEAKER_SHADOWHEART: ((0.0, 4, None), (1.82, 16, None), (3.56, 32, None), (5.29, 64, 1), (8.9, 1024, 2), (11.0, 64, None), (11.8, 2, None)),
+            bg3.SPEAKER_SHADOWHEART: ((0.0, 4, None), (1.82, 16, None), (3.56, 64, None), (5.29, 64, 1), (8.9, 1024, 2), (11.0, 64, None), (11.8, 2, None)),
             bg3.SPEAKER_PLAYER: ((0.0, 64, 1),)
         },
         phase_duration=13.56)
@@ -341,7 +493,7 @@ def patch_sharess_caress() -> None:
     d.create_standard_dialog_node(
         what_do_you_mean_uuid,
         bg3.SPEAKER_PLAYER,
-        [arent_dear_friends_uuid],
+        [i_dont_have_to_explain_uuid],
         bg3.text_content('h6d9862b7g728fg4822ga5f3g658e9bfc16d3', 1),
         constructor=bg3.dialog_object.QUESTION)
 
@@ -363,6 +515,7 @@ def patch_sharess_caress() -> None:
         })
     create_shadowheart_tl_shot(t, 0.0, 7.0)
 
+    # Unused dialog node
     # We aren't dear friends now, if that's what you're asking.
     d.create_standard_dialog_node(
         arent_dear_friends_uuid,
@@ -381,6 +534,25 @@ def patch_sharess_caress() -> None:
         phase_duration=4.2)
     create_shadowheart_tl_shot(t, 0.0, 3.0)
     t.create_tl_shot('b6e5d011-7375-4baf-8c02-942f716ee78c', 3.0, 4.2, is_snapped_to_end=True)
+
+    # I don't have to explain myself to you.
+    d.create_standard_dialog_node(
+        i_dont_have_to_explain_uuid,
+        bg3.SPEAKER_SHADOWHEART,
+        [best_leave_me_alone_uuid],
+        bg3.text_content('hee549e4ag5e19g41c5gb7d8g1ba58eb2d7b8', 1))
+    t.create_simple_dialog_answer_phase(
+        bg3.SPEAKER_SHADOWHEART,
+        2.61,
+        i_dont_have_to_explain_uuid,
+        (),
+        emotions={
+            bg3.SPEAKER_SHADOWHEART: ((0.0, 1024, None), (1.5, 4, None)),
+            bg3.SPEAKER_PLAYER: ((3.3, 64, 2),)
+        },
+        phase_duration=3.2)
+    create_shadowheart_tl_shot(t, 0.0, 2.7)
+    t.create_tl_shot('b6e5d011-7375-4baf-8c02-942f716ee78c', 2.7, 3.2, is_snapped_to_end=True)
 
     # Now leave me alone.
     d.create_standard_dialog_node(
@@ -425,3 +597,4 @@ def patch_sharess_caress() -> None:
     t.update_duration()
 
 add_build_procedure('patch_sharess_caress', patch_sharess_caress)
+add_build_procedure('patch_dapper_drow_intimacy', patch_dapper_drow_intimacy)

@@ -7,21 +7,42 @@ from ._constants import PEANUT_SLOT_0, PEANUT_SLOT_1, PEANUT_SLOT_2, PEANUTS
 from ._dialog import dialog_object
 from ._files import game_file
 
+from decimal import (
+    BasicContext,
+    Decimal
+)
 from typing import Iterable
 
-class timeline_phase:
+TIMELINE_PRECISION = 9
+
+ZERO = Decimal("0.0000")
+LOWER_BOUND = Decimal("0.001")
+
+def to_decimal(number: str | int | float | Decimal) -> Decimal:
+    if isinstance(number, str) or isinstance(number, int):
+        return Decimal(number, context = BasicContext)
+    elif isinstance(number, float):
+        return Decimal(str(number), context = BasicContext)
+    elif isinstance(number, Decimal):
+        return number
+    raise TypeError(f'Expected number as a string | float | int | Decimal, got {type(number)}')
+
+def round_decimal(number: Decimal) -> Decimal:
+    return round(number, ndigits = TIMELINE_PRECISION)
+
+class timeline_phase_v2:
     __index: int
     __dialog_node_uuid: str
     __reference_id: str
-    __start: float
-    __end: float
+    __start: Decimal
+    __end: Decimal
 
-    def __init__(self, index: int, dialog_node_uuid: str, reference_id: str, start: float, end: float) -> None:
+    def __init__(self, index: int, dialog_node_uuid: str, reference_id: str, start: str | float | int, end: str | float | int) -> None:
         self.__index = index
         self.__dialog_node_uuid = dialog_node_uuid
         self.__reference_id = reference_id
-        self.__start = start
-        self.__end = end
+        self.__start = to_decimal(start)
+        self.__end = to_decimal(end)
 
     @property
     def index(self) -> int:
@@ -36,20 +57,18 @@ class timeline_phase:
         return self.__reference_id
 
     @property
-    def start(self) -> float:
+    def start(self) -> Decimal:
         return self.__start
 
     @property
-    def end(self) -> float:
+    def end(self) -> Decimal:
         return self.__end
 
     @property
-    def duration(self) -> float:
+    def duration(self) -> Decimal:
         return self.__end - self.__start
 
-class timeline_object:
-    TIMELINE_PRECISION = 4
-
+class timeline_object_v2:
     ACTOR_CHARACTER = 'character'
     ACTOR_PEANUT = 'peanut'
     ACTOR_NARRATOR = 'narrator'
@@ -79,13 +98,14 @@ class timeline_object:
     __file: game_file
     __dialog: dialog_object
     __effect_components_parent_node: et.Element
-    __duration: float
-    __phases_start_times: list[float]
-    __phases_durations: list[float]
-    __current_phase_start_time: float | None
+    __duration: Decimal
+    __phases_start_times: list[Decimal]
+    __phases_durations: list[Decimal]
+    __current_phase_start_time: Decimal | None
     __current_phase_index: int | None
     __node_insertion_index: int | None
     __peanuts_uuids: list[str]
+    __cameras_uuids: list[str]
 
     def __init__(self, gamefile: game_file, dialog: dialog_object) -> None:
         self.__file = gamefile
@@ -94,13 +114,15 @@ class timeline_object:
         if node is None:
             raise RuntimeError(f"file {gamefile.relative_file_path} doesn't contain a timeline object")
         self.__effect_components_parent_node = node
-        self.__phases_start_times = list[float]()
-        self.__phases_durations = list[float]()
+        self.__duration = ZERO
+        self.__phases_start_times = list[Decimal]()
+        self.__phases_durations = list[Decimal]()
         self.update_duration()
         self.__current_phase_start_time = None
         self.__current_phase_index = None
         self.__node_insertion_index = None
         self.__peanuts_uuids = list[str]()
+        __cameras_uuids = list[str]()
         peanuts = gamefile.root_node.findall('./region[@id="TimelineContent"]/node[@id="TimelineContent"]/children/node[@id="PeanutSlotIdMap"]/children/node[@id="Object"]/children/node[@id="Object"][@key="MapKey"]')
         for peanut in peanuts:
             peanut_uuid = get_required_bg3_attribute(peanut, 'MapKey')
@@ -118,11 +140,11 @@ class timeline_object:
     def xml(self) -> et.Element:
         return self.__file.root_node
 
-    def __get_tl_node_start_time(self, tl_node: et.Element) -> float:
+    def __get_tl_node_start_time(self, tl_node: et.Element) -> Decimal:
         start_time = get_bg3_attribute(tl_node, 'StartTime')
         if start_time is None:
             return 0.0
-        return float(start_time)
+        return to_decimal(start_time)
 
     def insert_new_tl_node(self, tl_node: et.Element) -> None:
         start_time = self.__get_tl_node_start_time(tl_node)
@@ -144,18 +166,18 @@ class timeline_object:
                 insert_pos += 1
             self.__effect_components_parent_node.insert(insert_pos, tl_node)
 
-    def update_duration(self) -> float:
-        self.__duration = 0.0
+    def update_duration(self) -> Decimal:
+        self.__duration = ZERO
         effect_node = self.__file.root_node.find('./region[@id="TimelineContent"]/node[@id="TimelineContent"]/children/node[@id="Effect"]')
         if effect_node is None:
             raise RuntimeError(f"cannot determine duration of timeline {self.__file.relative_file_path}")
         phases = effect_node.findall('./children/node[@id="Phases"]/children/node[@id="Phase"]')
-        self.__phases_start_times = list[float]()
+        self.__phases_start_times = list[Decimal]()
         for phase in phases:
-            phase_duration = timeline_object.__round(float(get_required_bg3_attribute(phase, 'Duration')))
+            phase_duration = to_decimal(get_required_bg3_attribute(phase, 'Duration'))
             self.__phases_start_times.append(self.__duration)
             self.__phases_durations.append(phase_duration)
-            self.__duration = timeline_object.__round(self.__duration + phase_duration)
+            self.__duration = round_decimal(self.__duration + phase_duration)
         set_bg3_attribute(effect_node, "Duration", str(self.__duration))
         return self.__duration
 
@@ -182,12 +204,12 @@ class timeline_object:
     def get_timeline_peanuts_uuids(self) -> tuple[str, ...]:
         return tuple(self.__peanuts_uuids)
 
-    def get_phase_start_time(self, phase_index: int) -> float:
+    def get_phase_start_time(self, phase_index: int) -> Decimal:
         if phase_index >= len(self.__phases_start_times):
             raise KeyError(f"phase index {phase_index} is out of bounds [0; {len(self.__phases_start_times)})")
         return self.__phases_start_times[phase_index]
 
-    def get_phase_duration(self, phase_index: int) -> float:
+    def get_phase_duration(self, phase_index: int) -> Decimal:
         if phase_index >= len(self.__phases_durations):
             raise KeyError(f"phase index {phase_index} is out of bounds [0; {len(self.__phases_durations)})")
         return self.__phases_durations[phase_index]
@@ -211,11 +233,12 @@ class timeline_object:
     def create_new_phase(
             self,
             dialog_node_uuid: str,
-            phase_duration: float,
+            phase_duration: str | float | int | Decimal,
             /,
             line_index: int | None = None,
             additional_nodes: Iterable[str] | None = None
     ) -> int:
+        p_duration = to_decimal(phase_duration)
         phases_children = self.__file.root_node.find('./region[@id="TimelineContent"]/node[@id="TimelineContent"]/children/node[@id="Effect"]/children/node[@id="Phases"]/children')
         if phases_children is None:
             raise RuntimeError(f"cannot find 'Phases' in timeline {self.__file.relative_file_path}")
@@ -224,7 +247,7 @@ class timeline_object:
         if timeline_phases_children is None:
             raise RuntimeError(f"cannot find 'TimelinePhases' in timeline {self.__file.relative_file_path}")
         phase_xml = '<node id="Phase">' + \
-                f'<attribute id="Duration" type="float" value="{phase_duration}" />' + \
+                f'<attribute id="Duration" type="float" value="{p_duration}" />' + \
                 '<attribute id="PlayCount" type="int32" value="1" />' + \
                 f'<attribute id="DialogNodeId" type="guid" value="{dialog_node_uuid}" />' + \
 				'<children><node id="QuestionHoldAutomation" /></children></node>'
@@ -242,15 +265,15 @@ class timeline_object:
             for additional_node in additional_nodes:
                 timeline_phase_xml = f'<node id="Object" key="MapKey"><attribute id="MapKey" type="guid" value="{additional_node}" /><attribute id="MapValue" type="uint64" value="{phase_index}" /></node>'
                 timeline_phases_children.append(et.fromstring(timeline_phase_xml))
-        self.__current_phase_start_time = timeline_object.__round(self.__duration)
+        self.__current_phase_start_time = round_decimal(self.__duration)
         self.__current_phase_index = phase_index
-        self.__duration = timeline_object.__round(self.__duration + phase_duration)
+        self.__duration = round_decimal(self.__duration + p_duration)
         self.__phases_start_times.append(self.__current_phase_start_time)
-        self.__phases_durations.append(phase_duration)
+        self.__phases_durations.append(p_duration)
         self.__find_node_insertion_index()
         return self.__current_phase_index
 
-    def use_existing_phase(self, phase_id: str | int) -> timeline_phase:
+    def use_existing_phase(self, phase_id: str | int) -> timeline_phase_v2:
         phase = self.get_timeline_phase(phase_id)
         self.__current_phase_index = phase.index
         self.__current_phase_start_time = phase.start
@@ -279,18 +302,14 @@ class timeline_object:
         return result
 
     @staticmethod
-    def __recurse_update_node_times(current_node: et.Element, time_delta: float) -> None:
+    def __recurse_update_node_times(current_node: et.Element, time_delta: Decimal) -> None:
         time_value = get_bg3_attribute(current_node, 'Time')
         if time_value is not None:
-            time_value = timeline_object.__round(float(time_value) + time_delta)
+            time_value = to_decimal(time_value) + time_delta
             set_bg3_attribute(current_node, 'Time', str(time_value))
         children = current_node.findall("./children/node")
         for child in children:
-            timeline_object.__recurse_update_node_times(child, time_delta)
-
-    @staticmethod
-    def __round(value: float) -> float:
-        return round(value, ndigits = timeline_object.TIMELINE_PRECISION)
+            timeline_object_v2.__recurse_update_node_times(child, time_delta)
 
     def get_effective_actor(self, actor_uuid: str) -> tuple[str, bool]:
         if actor_uuid in PEANUTS:
@@ -330,7 +349,7 @@ class timeline_object:
             source_node: str | et.Element,
             /,
             new_node_uuid: str | None = None,
-            new_node_duration: float | None = None,
+            new_node_duration: str | float | int | Decimal | None = None,
             new_actor: str | None = None
     ) -> et.Element:
         if self.__current_phase_index is None or self.__current_phase_start_time is None:
@@ -342,35 +361,41 @@ class timeline_object:
         new_node = et.fromstring(et.tostring(source_node))
         phase_index = get_bg3_attribute(source_node, 'PhaseIndex')
         val = get_bg3_attribute(source_node, 'StartTime')
-        source_node_start = 0.0 if val is None else float(val)
-        source_node_end = float(get_required_bg3_attribute(source_node, 'EndTime'))
+        source_node_start = ZERO if val is None else to_decimal(val)
+        source_node_end = to_decimal(get_required_bg3_attribute(source_node, 'EndTime'))
         if phase_index is None:
             phase_index = 0
         else:
             phase_index = int(phase_index)
-        source_phase_start = timeline_object.__round(self.__phases_start_times[phase_index])
-        current_phase_duration = timeline_object.__round(self.__phases_durations[self.__current_phase_index])
-        current_phase_end_time = timeline_object.__round(self.__current_phase_start_time + current_phase_duration)
+        source_phase_start = round_decimal(self.__phases_start_times[phase_index])
+        current_phase_duration = round_decimal(self.__phases_durations[self.__current_phase_index])
+        current_phase_end_time = round_decimal(self.__current_phase_start_time + current_phase_duration)
 
         if new_node_uuid is None:
             new_node_uuid = new_random_uuid()
-        time_delta = timeline_object.__round(source_node_start - source_phase_start)
-        if time_delta < 0.0001:
-            time_delta = 0.0
-        new_node_start = timeline_object.__round(self.__current_phase_start_time + time_delta)
+        time_delta = round_decimal(source_node_start - source_phase_start)
+        if time_delta < LOWER_BOUND:
+            time_delta = ZERO
+        new_node_start = round_decimal(self.__current_phase_start_time + time_delta)
         if new_node_duration is None:
-            new_node_end = timeline_object.__round(self.__current_phase_start_time + current_phase_duration)
-        elif new_node_duration < 0.0001:
-            new_node_end = timeline_object.__round(new_node_start + (source_node_end - source_node_start))
-            if new_node_end > current_phase_end_time:
-                new_node_end = current_phase_end_time
+            new_node_end = round_decimal(self.__current_phase_start_time + current_phase_duration)
         else:
-            new_node_end = new_node_start + new_node_duration
+            new_node_dur = to_decimal(new_node_duration)
+            if new_node_dur < LOWER_BOUND:
+                new_node_end = round_decimal(new_node_start + (source_node_end - source_node_start))
+                if new_node_end > current_phase_end_time:
+                    new_node_end = current_phase_end_time
+            else:
+                new_node_end = round_decimal(new_node_start + new_node_dur)
+        if new_node_end > current_phase_end_time:
+            new_node_end = current_phase_end_time
+        elif (current_phase_end_time - new_node_end) < LOWER_BOUND:
+            new_node_end = current_phase_end_time
         set_bg3_attribute(new_node, 'ID', new_node_uuid, attribute_type = 'guid')
         set_bg3_attribute(new_node, 'PhaseIndex', str(self.__current_phase_index), attribute_type = 'int64')
         set_bg3_attribute(new_node, 'StartTime', str(new_node_start), attribute_type = 'float')
         set_bg3_attribute(new_node, 'EndTime', str(new_node_end), attribute_type = 'float')
-        timeline_object.__recurse_update_node_times(new_node, timeline_object.__round(new_node_start - source_node_start))
+        timeline_object_v2.__recurse_update_node_times(new_node, round_decimal(new_node_start - source_node_start))
         if new_actor is not None:
             actor_node = new_node.find('./children/node[@id="Actor"]')
             if actor_node is None:
@@ -389,11 +414,11 @@ class timeline_object:
             self,
             template_dialog_node_uuid: str,
             speaker: str,
-            voice_duration: float,
+            voice_duration: str | float | int | Decimal,
             dialog_node_uuid: str,
             /,
             skip_tl_nodes: Iterable[str] | None = None,
-            phase_duration: float | None = None,
+            phase_duration: str | float | int | Decimal | None = None,
             line_index: int | None = None,
             emotions: dict[str, Iterable[tuple[float, int, int | None]]] | None = None,
             attitudes: dict[str, Iterable[tuple[float, str, str, int | None]]] | None = None
@@ -469,7 +494,6 @@ class timeline_object:
                     attitudes_added.append(speaker_uuid)
             else:
                 new_effect_component = self.clone_tl_node(effect_component)
-            #self.__effect_components_parent_node.append(new_effect_component)
             self.insert_new_tl_node(new_effect_component)
         phase_duration = self.__phases_durations[self.__current_phase_index]
         if emotions is not None:
@@ -478,14 +502,14 @@ class timeline_object:
                     emotion_keys = list[et.Element]()
                     for emotion in emotions[speaker_uuid]:
                         emotion_keys.append(self.create_emotion_key(emotion[0], emotion[1], variation = emotion[2]))
-                    self.create_tl_actor_node(timeline_object.EMOTION, speaker_uuid, 0.0, phase_duration, emotion_keys)
+                    self.create_tl_actor_node(timeline_object_v2.EMOTION, speaker_uuid, 0.0, phase_duration, emotion_keys)
         if attitudes is not None:
             for speaker_uuid in attitudes:
                 if speaker_uuid not in attitudes_added:
                     attitude_keys = list[et.Element]()
                     for attitude in attitudes[speaker_uuid]:
                         attitude_keys.append(self.create_attitude_key(emotion[0], emotion[1], emotion[2]))
-                    self.create_tl_actor_node(timeline_object.ATTITUDE, speaker_uuid, 0.0, phase_duration, attitude_keys)
+                    self.create_tl_actor_node(timeline_object_v2.ATTITUDE, speaker_uuid, 0.0, phase_duration, attitude_keys)
 
     def create_new_cinematic_phase_from_another(
             self,
@@ -493,11 +517,11 @@ class timeline_object:
             dialog_node_uuid: str,
             /,
             skip_tl_nodes: Iterable[str] | None = None,
-            phase_duration: float | None = None,
+            phase_duration: str | float | int | Decimal | None = None,
             line_index: int | None = None,
             emotions: dict[str, Iterable[tuple[float, int, int | None]]] | None = None,
             attitudes: dict[str, Iterable[tuple[float, str, str, int | None]]] | None = None
-    ) -> float:
+    ) -> Decimal:
         tl_phase = self.get_timeline_phase(template_dialog_node_uuid)
         phase_components = list[et.Element]()
         for effect_component in self.all_effect_components:
@@ -506,7 +530,7 @@ class timeline_object:
             if phase_index == tl_phase.index:
                 phase_components.append(effect_component)
         if phase_duration is None:
-            phase_duration = tl_phase.duration
+            phase_duration = str(tl_phase.duration)
         self.create_new_phase(dialog_node_uuid, phase_duration, line_index=line_index)
         skip_set = frozenset(skip_tl_nodes) if skip_tl_nodes is not None else frozenset()
         emotions_added = list[str]()
@@ -562,14 +586,14 @@ class timeline_object:
                     emotion_keys = list[et.Element]()
                     for emotion in emotions[speaker_uuid]:
                         emotion_keys.append(self.create_emotion_key(emotion[0], emotion[1], variation = emotion[2]))
-                    self.create_tl_actor_node(timeline_object.EMOTION, speaker_uuid, 0.0, phase_duration, emotion_keys)
+                    self.create_tl_actor_node(timeline_object_v2.EMOTION, speaker_uuid, 0.0, phase_duration, emotion_keys)
         if attitudes is not None:
             for speaker_uuid in attitudes:
                 if speaker_uuid not in attitudes_added:
                     attitude_keys = list[et.Element]()
                     for attitude in attitudes[speaker_uuid]:
                         attitude_keys.append(self.create_attitude_key(emotion[0], emotion[1], emotion[2]))
-                    self.create_tl_actor_node(timeline_object.ATTITUDE, speaker_uuid, 0.0, phase_duration, attitude_keys)
+                    self.create_tl_actor_node(timeline_object_v2.ATTITUDE, speaker_uuid, 0.0, phase_duration, attitude_keys)
         return phase_duration
 
     def copy_tl_nodes_to_current_phase(
@@ -592,8 +616,8 @@ class timeline_object:
             self,
             node_type: str,
             speaker_actor: str,
-            start: float,
-            end: float,
+            start: float | str | int | Decimal,
+            end: float | str | int | Decimal,
             keys: Iterable[et.Element],
             /,
             node_uuid: str | None = None,
@@ -610,13 +634,13 @@ class timeline_object:
         if peanut_override is None:
             peanut_override = effective_peanut
 
-        if node_type in timeline_object.VALID_ACTOR_NODES:
+        if node_type in timeline_object_v2.VALID_ACTOR_NODES:
             xml = [f'<node id="EffectComponent"><attribute id="Type" type="LSString" value="{node_type}" />']
         else:
             raise ValueError(f"unsupported timeline event {node_type}")
         xml.append(f'<attribute id="ID" type="guid" value="{node_uuid}" />')
-        xml.append(f'<attribute id="StartTime" type="float" value="{self.__current_phase_start_time + start}" />')
-        xml.append(f'<attribute id="EndTime" type="float" value="{self.__current_phase_start_time + end}" />')
+        xml.append(f'<attribute id="StartTime" type="float" value="{self.__current_phase_start_time + to_decimal(start)}" />')
+        xml.append(f'<attribute id="EndTime" type="float" value="{self.__current_phase_start_time + to_decimal(end)}" />')
         if self.__current_phase_index > 0:
             xml.append(f'<attribute id="PhaseIndex" type="int64" value="{self.__current_phase_index}" />')
         if is_snapped_to_end:
@@ -646,11 +670,10 @@ class timeline_object:
             self,
             node_type: str,
             actors: list[str],
-            start: float,
-            end: float,
+            start: float | str | int | Decimal,
+            end: float | str | int | Decimal,
             keys: Iterable[et.Element],
             /,
-            node_uuid: str | None = None,
             is_snapped_to_end: bool = False,
             is_mimicry: bool = False,
             peanut_override: bool | None = None
@@ -668,8 +691,8 @@ class timeline_object:
     def create_tl_non_actor_node(
             self,
             node_type: str,
-            start: float,
-            end: float,
+            start: float | str | int | Decimal,
+            end: float | str | int | Decimal,
             keys: Iterable[et.Element],
             /,
             node_uuid: str | None = None,
@@ -679,13 +702,13 @@ class timeline_object:
             raise RuntimeError("a new phase hasn't been created")
         if node_uuid is None:
             node_uuid = new_random_uuid()
-        if node_type in timeline_object.VALID_NON_ACTOR_NODES:
+        if node_type in timeline_object_v2.VALID_NON_ACTOR_NODES:
             xml = [f'<node id="EffectComponent"><attribute id="Type" type="LSString" value="{node_type}" />']
         else:
             raise ValueError(f"unsupported timeline event {node_type}")
         xml.append(f'<attribute id="ID" type="guid" value="{node_uuid}" />')
-        xml.append(f'<attribute id="StartTime" type="float" value="{self.__current_phase_start_time + start}" />')
-        xml.append(f'<attribute id="EndTime" type="float" value="{self.__current_phase_start_time + end}" />')
+        xml.append(f'<attribute id="StartTime" type="float" value="{self.__current_phase_start_time + to_decimal(start)}" />')
+        xml.append(f'<attribute id="EndTime" type="float" value="{self.__current_phase_start_time + to_decimal(end)}" />')
         if self.__current_phase_index > 0:
             xml.append(f'<attribute id="PhaseIndex" type="int64" value="{self.__current_phase_index}" />')
         if is_snapped_to_end:
@@ -707,8 +730,8 @@ class timeline_object:
     def create_tl_voice(
             self,
             speaker: str,
-            start: float,
-            end: float,
+            start: float | str | int | Decimal,
+            end: float | str | int | Decimal,
             dialog_node_uuid: str,
             /,
             line_index: int | None = None,
@@ -731,8 +754,8 @@ class timeline_object:
 
         xml = ['<node id="EffectComponent"><attribute id="Type" type="LSString" value="TLVoice" />']
         xml.append(f'<attribute id="ID" type="guid" value="{node_uuid}" />')
-        xml.append(f'<attribute id="StartTime" type="float" value="{self.__current_phase_start_time + start}" />')
-        xml.append(f'<attribute id="EndTime" type="float" value="{self.__current_phase_start_time + end}" />')
+        xml.append(f'<attribute id="StartTime" type="float" value="{self.__current_phase_start_time + to_decimal(start)}" />')
+        xml.append(f'<attribute id="EndTime" type="float" value="{self.__current_phase_start_time + to_decimal(end)}" />')
         xml.append(f'<attribute id="DialogNodeId" type="guid" value="{dialog_node_uuid}" />')
         if self.__current_phase_index > 0:
             xml.append(f'<attribute id="PhaseIndex" type="int64" value="{self.__current_phase_index}" />')
@@ -779,8 +802,8 @@ class timeline_object:
     def create_tl_show_armor(
             self,
             target_speaker: str,
-            start: float,
-            end: float,
+            start: float | str | int | Decimal,
+            end: float | str | int | Decimal,
             channels: Iterable[Iterable[et.Element]],
             /,
             node_uuid: str | None = None,
@@ -795,8 +818,8 @@ class timeline_object:
             node_uuid = new_random_uuid()
         xml = [f'<node id="EffectComponent"><attribute id="Type" type="LSString" value="TLShowArmor" />']
         xml.append(f'<attribute id="ID" type="guid" value="{node_uuid}" />')
-        xml.append(f'<attribute id="StartTime" type="float" value="{self.__current_phase_start_time + start}" />')
-        xml.append(f'<attribute id="EndTime" type="float" value="{self.__current_phase_start_time + end}" />')
+        xml.append(f'<attribute id="StartTime" type="float" value="{self.__current_phase_start_time + to_decimal(start)}" />')
+        xml.append(f'<attribute id="EndTime" type="float" value="{self.__current_phase_start_time + to_decimal(end)}" />')
         if self.__current_phase_index > 0:
             xml.append(f'<attribute id="PhaseIndex" type="int64" value="{self.__current_phase_index}" />')
         if is_snapped_to_end:
@@ -833,8 +856,8 @@ class timeline_object:
     def create_tl_transform(
             self,
             actor: str,
-            start: float,
-            end: float,
+            start: float | str | int | Decimal,
+            end: float | str | int | Decimal,
             channels: Iterable[Iterable[et.Element]],
             /,
             node_uuid: str | None = None,
@@ -850,8 +873,8 @@ class timeline_object:
             node_uuid = new_random_uuid()
         xml = [f'<node id="EffectComponent"><attribute id="Type" type="LSString" value="TLTransform" />']
         xml.append(f'<attribute id="ID" type="guid" value="{node_uuid}" />')
-        xml.append(f'<attribute id="StartTime" type="float" value="{self.__current_phase_start_time + start}" />')
-        xml.append(f'<attribute id="EndTime" type="float" value="{self.__current_phase_start_time + end}" />')
+        xml.append(f'<attribute id="StartTime" type="float" value="{self.__current_phase_start_time + to_decimal(start)}" />')
+        xml.append(f'<attribute id="EndTime" type="float" value="{self.__current_phase_start_time + to_decimal(end)}" />')
         if self.__current_phase_index > 0:
             xml.append(f'<attribute id="PhaseIndex" type="int64" value="{self.__current_phase_index}" />')
         if continuous:
@@ -882,8 +905,8 @@ class timeline_object:
     def create_tl_shot(
             self,
             camera: int | str,
-            start: float,
-            end: float,
+            start: float | str | int | Decimal,
+            end: float | str | int | Decimal,
             /,
             node_uuid: str | None = None,
             is_snapped_to_end: bool = False,
@@ -907,8 +930,8 @@ class timeline_object:
             node_uuid = new_random_uuid()
         xml = [f'<node id="EffectComponent"><attribute id="Type" type="LSString" value="TLShot" />']
         xml.append(f'<attribute id="ID" type="guid" value="{node_uuid}" />')
-        xml.append(f'<attribute id="StartTime" type="float" value="{self.__current_phase_start_time + start}" />')
-        xml.append(f'<attribute id="EndTime" type="float" value="{self.__current_phase_start_time + end}" />')
+        xml.append(f'<attribute id="StartTime" type="float" value="{self.__current_phase_start_time + to_decimal(start)}" />')
+        xml.append(f'<attribute id="EndTime" type="float" value="{self.__current_phase_start_time + to_decimal(end)}" />')
         if self.__current_phase_index > 0:
             xml.append(f'<attribute id="PhaseIndex" type="int64" value="{self.__current_phase_index}" />')
         if is_snapped_to_end:
@@ -940,8 +963,8 @@ class timeline_object:
     def create_tl_camera_dof(
             self,
             camera: int | str,
-            start: float,
-            end: float,
+            start: float | str | int | Decimal,
+            end: float | str | int | Decimal,
             channels: Iterable[Iterable[et.Element]],
             /,
             node_uuid: str | None = None,
@@ -963,8 +986,8 @@ class timeline_object:
             node_uuid = new_random_uuid()
         xml = [f'<node id="EffectComponent"><attribute id="Type" type="LSString" value="TLCameraDoF" />']
         xml.append(f'<attribute id="ID" type="guid" value="{node_uuid}" />')
-        xml.append(f'<attribute id="StartTime" type="float" value="{self.__current_phase_start_time + start}" />')
-        xml.append(f'<attribute id="EndTime" type="float" value="{self.__current_phase_start_time + end}" />')
+        xml.append(f'<attribute id="StartTime" type="float" value="{self.__current_phase_start_time + to_decimal(start)}" />')
+        xml.append(f'<attribute id="EndTime" type="float" value="{self.__current_phase_start_time + to_decimal(end)}" />')
         if self.__current_phase_index > 0:
             xml.append(f'<attribute id="PhaseIndex" type="int64" value="{self.__current_phase_index}" />')
         if is_snapped_to_end:
@@ -994,8 +1017,8 @@ class timeline_object:
     def create_tl_material(
             self,
             actor: str,
-            start: float,
-            end: float,
+            start: float | str | int | Decimal,
+            end: float | str | int | Decimal,
             group_id: str,
             material_parameters: Iterable[et.Element],
             visibility_channel_keys: Iterable[et.Element],
@@ -1010,8 +1033,8 @@ class timeline_object:
             node_uuid = new_random_uuid()
         xml = [f'<node id="EffectComponent"><attribute id="Type" type="LSString" value="TLMaterial" />']
         xml.append(f'<attribute id="ID" type="guid" value="{node_uuid}" />')
-        xml.append(f'<attribute id="StartTime" type="float" value="{self.__current_phase_start_time + start}" />')
-        xml.append(f'<attribute id="EndTime" type="float" value="{self.__current_phase_start_time + end}" />')
+        xml.append(f'<attribute id="StartTime" type="float" value="{self.__current_phase_start_time + to_decimal(start)}" />')
+        xml.append(f'<attribute id="EndTime" type="float" value="{self.__current_phase_start_time + to_decimal(end)}" />')
         if self.__current_phase_index > 0:
             xml.append(f'<attribute id="PhaseIndex" type="int64" value="{self.__current_phase_index}" />')
         if is_snapped_to_end:
@@ -1050,8 +1073,8 @@ class timeline_object:
     def create_tl_animation(
             self,
             actor: str,
-            start: float,
-            end: float,
+            start: float | str | int | Decimal,
+            end: float | str | int | Decimal,
             animation_id: str,
             animation_group: str,
             /,
@@ -1075,8 +1098,8 @@ class timeline_object:
             node_uuid = new_random_uuid()
         xml = [f'<node id="EffectComponent"><attribute id="Type" type="LSString" value="TLAnimation" />']
         xml.append(f'<attribute id="ID" type="guid" value="{node_uuid}" />')
-        xml.append(f'<attribute id="StartTime" type="float" value="{self.__current_phase_start_time + start}" />')
-        xml.append(f'<attribute id="EndTime" type="float" value="{self.__current_phase_start_time + end}" />')
+        xml.append(f'<attribute id="StartTime" type="float" value="{self.__current_phase_start_time + to_decimal(start)}" />')
+        xml.append(f'<attribute id="EndTime" type="float" value="{self.__current_phase_start_time + to_decimal(end)}" />')
         if self.__current_phase_index > 0:
             xml.append(f'<attribute id="PhaseIndex" type="int64" value="{self.__current_phase_index}" />')
         xml.append(f'<attribute id="AnimationSourceId" type="guid" value="{animation_id}" />')
@@ -1131,8 +1154,8 @@ class timeline_object:
     def create_tl_camera_fov(
             self,
             camera_uuid: str,
-            start: float,
-            end: float,
+            start: float | str | int | Decimal,
+            end: float | str | int | Decimal,
             keys: Iterable[et.Element],
             /,
             node_uuid: str | None = None,
@@ -1144,8 +1167,8 @@ class timeline_object:
             node_uuid = new_random_uuid()
         xml = [f'<node id="EffectComponent"><attribute id="Type" type="LSString" value="TLCameraFoV" />']
         xml.append(f'<attribute id="ID" type="guid" value="{node_uuid}" />')
-        xml.append(f'<attribute id="StartTime" type="float" value="{self.__current_phase_start_time + start}" />')
-        xml.append(f'<attribute id="EndTime" type="float" value="{self.__current_phase_start_time + end}" />')
+        xml.append(f'<attribute id="StartTime" type="float" value="{self.__current_phase_start_time + to_decimal(start)}" />')
+        xml.append(f'<attribute id="EndTime" type="float" value="{self.__current_phase_start_time + to_decimal(end)}" />')
         if self.__current_phase_index > 0:
             xml.append(f'<attribute id="PhaseIndex" type="int64" value="{self.__current_phase_index}" />')
         if is_snapped_to_end:
@@ -1169,7 +1192,7 @@ class timeline_object:
 
     def create_attitude_key(
             self,
-            time: float,
+            time: float | str | int,
             pose: str,
             transition: str,
             /,
@@ -1177,7 +1200,7 @@ class timeline_object:
     ) -> et.Element:
         if self.__current_phase_start_time is None:
             raise RuntimeError("new phase should be created before effect components")
-        abs_time = self.__current_phase_start_time + time
+        abs_time = self.__current_phase_start_time + to_decimal(time)
         return et.fromstring(f'<node id="Key"><attribute id="Time" type="float" value="{abs_time}" />' +
                                 f'<attribute id="InterpolationType" type="uint8" value="{interpolation_type}" />' +
                                 f'<attribute id="Pose" type="FixedString" value="{pose}" />' +
@@ -1185,7 +1208,7 @@ class timeline_object:
 
     def create_emotion_key(
             self,
-            time: float,
+            time: float | str | int | Decimal,
             emotion: int,
             /,
             variation: int | None = None,
@@ -1194,7 +1217,7 @@ class timeline_object:
     ) -> et.Element:
         if self.__current_phase_start_time is None:
             raise RuntimeError("new phase should be created before effect components")
-        abs_time = self.__current_phase_start_time + time
+        abs_time = self.__current_phase_start_time + to_decimal(time)
         strings = [
             f'<node id="Key"><attribute id="Time" type="float" value="{abs_time}" />',
             f'<attribute id="InterpolationType" type="uint8" value="{interpolation_type}" />',
@@ -1209,7 +1232,7 @@ class timeline_object:
 
     def create_look_at_key(
             self,
-            time: float,
+            time: float | str | int | Decimal,
             /,
             target: str | None = None,
             bone: str | None = None,
@@ -1220,7 +1243,6 @@ class timeline_object:
             head_turn_speed_multiplier: float | None = None,
             weight: float | None = None,
             look_at_mode: int | None = None,
-            look_at_interp_mode: int | None = None,
             eye_look_at_bone: str | None = None,
             eye_look_at_offset: tuple[float, float, float] | None = None,
             offset: tuple[float, float, float] | None = None,
@@ -1234,7 +1256,7 @@ class timeline_object:
         if self.__current_phase_start_time is None:
             raise RuntimeError("new phase should be created before effect components")
         xml = ['<node id="Key">']
-        abs_time = self.__current_phase_start_time + time
+        abs_time = self.__current_phase_start_time + to_decimal(time)
         xml.append(f'<attribute id="Time" type="float" value="{abs_time}" />')
         xml.append(f'<attribute id="InterpolationType" type="uint8" value="{interpolation_type}" />')
         if target is not None:
@@ -1256,8 +1278,6 @@ class timeline_object:
             xml.append(f'<attribute id="Weight" type="double" value="{weight}" />')
         if look_at_mode is not None:
             xml.append(f'<attribute id="LookAtMode" type="uint8" value="{look_at_mode}" />')
-        if look_at_interp_mode is not None:
-            xml.append(f'<attribute id="LookAtInterpMode" type="uint8" value="{look_at_interp_mode}" />')
         if eye_look_at_bone is not None:
             xml.append(f'<attribute id="EyeLookAtBone" type="FixedString" value="{eye_look_at_bone}" />')
         if eye_look_at_offset is not None:
@@ -1280,7 +1300,7 @@ class timeline_object:
 
     def create_sound_event_key(
             self,
-            time: float,
+            time: float | str | int | Decimal,
             /,
             sound_event_id: str | None = None,
             sound_object_index: int | None = None,
@@ -1289,9 +1309,10 @@ class timeline_object:
             interpolation_type: int = 3
     ) -> et.Element:
         if self.__current_phase_start_time is None:
-            raise RuntimeError("new phase should be created before effect components")        
+            raise RuntimeError("new phase should be created before effect components")
+        abs_time = self.__current_phase_start_time + to_decimal(time)
         strings = [
-            f'<node id="Key"><attribute id="Time" type="float" value="{self.__current_phase_start_time + time}" />',
+            f'<node id="Key"><attribute id="Time" type="float" value="{abs_time}" />',
             f'<attribute id="InterpolationType" type="uint8" value="{interpolation_type}" />'
         ]
         if sound_event_id is not None:
@@ -1308,10 +1329,10 @@ class timeline_object:
     def create_value_key(
             self,
             /,
-            value: bool | float | Iterable | None = None,
+            value: bool | float | str | Iterable | None = None,
             value_name: str | None = None,
             value_type: str | None = None,
-            time: float | None = None,
+            time: float | str | int | Decimal | None = None,
             interpolation_type: int | None = None
     ) -> et.Element:
         if self.__current_phase_start_time is None:
@@ -1323,6 +1344,8 @@ class timeline_object:
             xml.append(f'<attribute id="{value_name}" type="{value_type}" value="{value}" />')
         elif isinstance(value, bool):
             xml.append(f'<attribute id="{value_name}" type="bool" value="{value}" />')
+        elif isinstance(value, str):
+            xml.append(f'<attribute id="{value_name}" type="float" value="{to_decimal(value)}" />')
         elif isinstance(value, float):
             xml.append(f'<attribute id="{value_name}" type="float" value="{value}" />')
         elif isinstance(value, Iterable) and len(value) == 3:
@@ -1330,7 +1353,7 @@ class timeline_object:
         elif isinstance(value, Iterable) and len(value) == 4:
             xml.append(f'<attribute id="{value_name}" type="fvec4" value="{value[0]} {value[1]} {value[2]} {value[3]}" />')
         if time is not None:
-            abs_time = self.__current_phase_start_time + time
+            abs_time = self.__current_phase_start_time + to_decimal(str(time))
             xml.append(f'<attribute id="Time" type="float" value="{abs_time}" />')
         if interpolation_type is not None:
             xml.append(f'<attribute id="InterpolationType" type="uint8" value="{interpolation_type}" />')
@@ -1339,7 +1362,7 @@ class timeline_object:
 
     def create_frame_of_reference_key(
             self,
-            time: float,
+            time: float | str | int | Decimal,
             interpolation_type: int,
             target_uuid: str,
             target_bone: str,
@@ -1348,7 +1371,7 @@ class timeline_object:
     ) -> et.Element:
         if self.__current_phase_start_time is None:
             raise RuntimeError("new phase should be created before effect components")
-        abs_time = self.__current_phase_start_time + time
+        abs_time = self.__current_phase_start_time + to_decimal(time)
         return et.fromstring(f'<node id="Key"><attribute id="Time" type="float" value="{abs_time}" />' +
                              f'<attribute id="InterpolationType" type="uint8" value="{interpolation_type}" />' +
                              '<children><node id="Value"><children><node id="frameOfReference">' +
@@ -1360,13 +1383,13 @@ class timeline_object:
 
     def create_switch_stage_event_key(
             self,
-            time: float,
+            time: float | str | int | Decimal,
             interpolation_type: int,
             event_uuid: str | None
     ) -> et.Element:
         if self.__current_phase_start_time is None:
             raise RuntimeError("new phase should be created before effect components")
-        abs_time = self.__current_phase_start_time + time
+        abs_time = self.__current_phase_start_time + to_decimal(time)
         if event_uuid is None:
             return et.fromstring(f'<node id="Key"><attribute id="Time" type="float" value="{abs_time}" />' +
                                  f'<attribute id="InterpolationType" type="uint8" value="{interpolation_type}" /></node>')
@@ -1377,13 +1400,13 @@ class timeline_object:
         
     def create_switch_location_event_key(
             self,
-            time: float,
+            time: float | str | int | Decimal,
             interpolation_type: int,
             event_uuid: str | None
     ) -> et.Element:
         if self.__current_phase_start_time is None:
             raise RuntimeError("new phase should be created before effect components")
-        abs_time = self.__current_phase_start_time + time
+        abs_time = self.__current_phase_start_time + to_decimal(time)
         if event_uuid is None:
             return et.fromstring(f'<node id="Key"><attribute id="Time" type="float" value="{abs_time}" />' +
                                  f'<attribute id="InterpolationType" type="uint8" value="{interpolation_type}" /></node>')
@@ -1411,12 +1434,12 @@ class timeline_object:
     def create_simple_dialog_answer_phase(
             self,
             speaker: str,
-            voice_duration: float,
+            voice_duration: float | str | int | Decimal,
             dialog_node_uuid: str,
             shots: Iterable[tuple[float | None, int | str]],
             /,
-            voice_delay: float | None = None,
-            phase_duration: float | None = None,
+            voice_delay: float | str | None = None,
+            phase_duration: float | str | int | Decimal | None = None,
             line_index: int | None = None,
             emotions: dict[str, Iterable[tuple[float, int, int | None]]] | None = None,
             attitudes: dict[str, Iterable[tuple[float, str, str, int | None]]] | None = None,
@@ -1428,14 +1451,14 @@ class timeline_object:
     ) -> None:
         if phase_duration is None:
             phase_duration = voice_duration
-        start = 0.0
-        voice_start = start if voice_delay is None else voice_delay
-        end = phase_duration
+        start = ZERO
+        voice_start = start if voice_delay is None else to_decimal(voice_delay)
+        end = to_decimal(phase_duration)
         self.create_new_phase(dialog_node_uuid, phase_duration, line_index=line_index)
         self.create_tl_voice(
             speaker,
-            voice_start,
-            voice_start + voice_duration,
+            str(voice_start),
+            str(voice_start + to_decimal(voice_duration)),
             dialog_node_uuid,
             line_index=line_index,
             is_snapped_to_end=is_snapped_to_end,
@@ -1448,7 +1471,7 @@ class timeline_object:
                 emotion_keys = list[et.Element]()
                 for emotion_record in emotion_records:
                     emotion_keys.append(self.create_emotion_key(emotion_record[0], emotion_record[1], variation = emotion_record[2]))
-                self.create_tl_actor_node(timeline_object.EMOTION, target, start, end, emotion_keys, is_snapped_to_end=True)
+                self.create_tl_actor_node(timeline_object_v2.EMOTION, target, start, end, emotion_keys, is_snapped_to_end=True)
         if attitudes is not None:
             for target, attitude_records in attitudes.items():
                 attitude_keys = list[et.Element]()
@@ -1460,22 +1483,24 @@ class timeline_object:
                             attitude_record[1],
                             attitude_record[2],
                             interpolation_type = interpolation_type))
-            self.create_tl_actor_node(timeline_object.ATTITUDE, target, start, end, attitude_keys)
+            self.create_tl_actor_node(timeline_object_v2.ATTITUDE, target, start, end, attitude_keys)
         shot_start = start
+        p_duration = to_decimal(phase_duration)
         for shot in shots:
-            if shot_start >= phase_duration:
-                raise RuntimeError(f"duration of TLShot exceeds phase duration: {shot_start} >= {phase_duration}")
-            shot_end = shot[0]
-            if shot_end is None:
-                shot_end = phase_duration
+            if shot_start >= p_duration:
+                raise RuntimeError(f"duration of TLShot exceeds phase duration: {shot_start} >= {p_duration}")
+            if shot[0] is None:
+                shot_end = p_duration
+            else:
+                shot_end = to_decimal(shot[0])
             camera = shot[1]
-            self.create_tl_shot(camera, shot_start, shot_end)
+            self.create_tl_shot(camera, str(shot_start), str(shot_end))
             shot_start = shot_end
 
     def remove_effect_component(self, effect_component: et.Element) -> None:
         self.__effect_components_parent_node.remove(effect_component)
 
-    def get_timeline_phase(self, phase_id: str | int) -> timeline_phase:
+    def get_timeline_phase(self, phase_id: str | int) -> timeline_phase_v2:
         phases = self.__file.root_node.findall('./region[@id="TimelineContent"]/node[@id="TimelineContent"]/children/node[@id="Effect"]/children/node[@id="Phases"]/children/node[@id="Phase"]')
         timeline_phases = self.__file.root_node.findall('./region[@id="TimelineContent"]/node[@id="TimelineContent"]/children/node[@id="TimelinePhases"]/children/node[@id="Object"]/children/node[@id="Object"]')
         for tl_phase in timeline_phases:
@@ -1487,7 +1512,7 @@ class timeline_object:
                     phase_start += float(get_required_bg3_attribute(phases[idx], "Duration"))
                 phase_end = phase_start + float(get_required_bg3_attribute(phases[map_value], "Duration"))
                 dialog_uuid = get_required_bg3_attribute(phases[map_value], "DialogNodeId")
-                return timeline_phase(map_value, dialog_uuid, map_key, phase_start, phase_end)
+                return timeline_phase_v2(map_value, dialog_uuid, map_key, phase_start, phase_end)
         raise KeyError(f"failed to find a phase with id {phase_id} in timeline {self.__file.relative_file_path}")
 
     def find_effect_component(self, effect_component_uuid: str) -> et.Element:
@@ -1516,8 +1541,8 @@ class timeline_object:
             node_uuid: str,
             /,
             actor: str | None = None,
-            start: float | None = None,
-            end: float | None = None,
+            start: float | str | int | Decimal | None = None,
+            end: float | str | int | Decimal | None = None,
             channels: Iterable[Iterable[et.Element]] | None = None,
             continuous: bool = False,
             is_snapped_to_end: bool = False
@@ -1530,9 +1555,9 @@ class timeline_object:
             effective_actor, _ = self.get_effective_actor(actor)
             set_bg3_attribute(actor_node, "UUID", effective_actor)
         if start is not None:
-            set_bg3_attribute(tl_node, "StartTime", start, attribute_type="float")
+            set_bg3_attribute(tl_node, "StartTime", str(to_decimal(start)), attribute_type="float")
         if end is not None:
-            set_bg3_attribute(tl_node, "EndTime", start, attribute_type="float")
+            set_bg3_attribute(tl_node, "EndTime", str(to_decimal(end)), attribute_type="float")
         if continuous:
             set_bg3_attribute(tl_node, "Continuous", "True", attribute_type="bool")
         if is_snapped_to_end:
@@ -1564,8 +1589,8 @@ class timeline_object:
             self,
             node_uuid: str,
             /,
-            start: float | None = None,
-            end: float | None = None,
+            start: float | str | int | Decimal | None = None,
+            end: float | str | int | Decimal | None = None,
             camera_uuid: str | None = None,
             keys: Iterable[et.Element] | None = None
     ) -> et.Element:
@@ -1576,9 +1601,9 @@ class timeline_object:
                 raise RuntimeError(f"bad timeline object {node_uuid}, cannot find the Actor node")
             set_bg3_attribute(camera_node, "UUID", camera_uuid)
         if start is not None:
-            set_bg3_attribute(tl_node, "StartTime", start, attribute_type="float")
+            set_bg3_attribute(tl_node, "StartTime", str(to_decimal(start)), attribute_type="float")
         if end is not None:
-            set_bg3_attribute(tl_node, "EndTime", start, attribute_type="float")
+            set_bg3_attribute(tl_node, "EndTime", str(to_decimal(end)), attribute_type="float")
         if keys is not None:
             children_node = tl_node.find('./children')
             if children_node is None:
@@ -1593,20 +1618,3 @@ class timeline_object:
                 raise RuntimeError(f"bad TLCameraFoV object {node_uuid}, cannot find the children node")
             for key in keys:
                 children_node.append(key)
-    """
-    def add_new_tl_node(self, node: et.Element) -> None:
-        index = 0
-        node_phase_index = get_bg3_attribute(node, 'PhaseIndex')
-        node_start_time = get_bg3_attribute(node, 'StartTime')
-        for existing_node in self.__effect_components_parent_node:
-            phase_index = get_bg3_attribute(existing_node, 'PhaseIndex')
-            start_time = get_bg3_attribute(existing_node, 'StartTime')
-            if phase_index is None:
-                phase_index = 0
-            if phase_index == node_phase_index:
-                if start_time > node_start_time:
-                    self.__effect_components_parent_node.insert(index, node)
-                    return
-            index += 1
-        self.__effect_components_parent_node.append(node)
-    """

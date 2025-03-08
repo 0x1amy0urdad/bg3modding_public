@@ -71,7 +71,7 @@ def add_hugs_to_the_story() -> None:
     d.set_dialog_flags(hug_her_node_uuid, checkflags=(
         bg3.flag_group('Object', (
             bg3.flag(bg3.FLAG_Approval_AtLeast_40_For_Sp2, True, slot_idx_shadowheart),
-            bg3.flag(ORI_Shadowheart_State_SmilesWhenHugged.uuid, False, slot_idx_shadowheart),
+            bg3.flag(Shadowheart_State_Smiles_When_Hugged.uuid, False, slot_idx_shadowheart),
         )),
     ))
     d.set_dialog_flags(nested_dialog_node_uuid, checkflags=())
@@ -90,8 +90,8 @@ def add_hugs_to_the_story() -> None:
     slot_idx_tav = d.get_speaker_slot_index(bg3.SPEAKER_PLAYER)
 
     shadowheart_hugs_enabled_group = bg3.flag_group('Object', (
-        bg3.flag(ORI_Shadowheart_State_HugsEnabled.uuid, True, slot_idx_shadowheart),
-        bg3.flag(ORI_Shadowheart_State_SmilesWhenHugged.uuid, True, slot_idx_shadowheart),
+        bg3.flag(Shadowheart_State_Hugs_Enabled.uuid, True, slot_idx_shadowheart),
+        bg3.flag(Shadowheart_State_Smiles_When_Hugged.uuid, True, slot_idx_shadowheart),
     ))
 
     # 'Embrace her', parents not saved
@@ -121,8 +121,8 @@ def add_hugs_to_the_story() -> None:
         root = True,
         setflags = (
             bg3.flag_group('Object', (
-                bg3.flag(ORI_Shadowheart_AfterParents.uuid, False, slot_idx_shadowheart),
-                bg3.flag(ORI_Shadowheart_CriedAfterParents.uuid, True, slot_idx_shadowheart),
+                bg3.flag(Shadowheart_After_Parents_Crisis.uuid, False, slot_idx_shadowheart),
+                bg3.flag(Shadowheart_Cried_After_Parents.uuid, True, slot_idx_shadowheart),
             )),
             bg3.flag_group('Global', (
                 bg3.flag(bg3.FLAG_ORI_Shadowheart_State_IrregularBehaviour, False, None),
@@ -141,8 +141,8 @@ def add_hugs_to_the_story() -> None:
         ),
         setflags = (
             bg3.flag_group('Object', (
-                bg3.flag(ORI_Shadowheart_State_HugsEnabled.uuid, True, slot_idx_shadowheart),
-                bg3.flag(ORI_Shadowheart_State_SmilesWhenHugged.uuid, True, slot_idx_shadowheart),
+                bg3.flag(Shadowheart_State_Hugs_Enabled.uuid, True, slot_idx_shadowheart),
+                bg3.flag(Shadowheart_State_Smiles_When_Hugged.uuid, True, slot_idx_shadowheart),
             )),
         )
     )
@@ -189,7 +189,7 @@ def add_hugs_to_the_story() -> None:
         bg3.flag_group('Object', (
             bg3.flag(bg3.FLAG_ORI_State_WasPartneredWithShadowheart, False, slot_idx_tav),
             bg3.flag(bg3.FLAG_Approval_AtLeast_60_For_Sp2, True, slot_idx_shadowheart),
-            bg3.flag(ORI_Shadowheart_State_HugsEnabled.uuid, True, slot_idx_shadowheart),
+            bg3.flag(Shadowheart_State_Hugs_Enabled.uuid, True, slot_idx_shadowheart),
         )),
     ))
     d.set_dialog_flags(nested_dialog_node_uuid, checkflags=())
@@ -235,7 +235,7 @@ def create_hugs_dialogs() -> None:
         [hug_first_reaction_node_uuid, hug_reaction_partnered_node_uuid, hug_reaction_dating_node_uuid, hug_reaction_node_uuid],
         checkflags = (
             bg3.flag_group('Object', (
-                bg3.flag(ORI_Shadowheart_State_SmilesWhenHugged.uuid, True, slot_idx_shadowheart),
+                bg3.flag(Shadowheart_State_Smiles_When_Hugged.uuid, True, slot_idx_shadowheart),
             )),
             bg3.flag_group('Tag', (
                 bg3.flag(bg3.TAG_BODYTYPE_STRONG, True, slot_idx_tav),
@@ -257,7 +257,7 @@ def create_hugs_dialogs() -> None:
         [hug_first_reaction_node_uuid, hug_reaction_partnered_node_uuid, hug_reaction_dating_node_uuid, hug_reaction_node_uuid],
         checkflags = (
             bg3.flag_group('Object', (
-                bg3.flag(ORI_Shadowheart_State_SmilesWhenHugged.uuid, True, slot_idx_shadowheart),
+                bg3.flag(Shadowheart_State_Smiles_When_Hugged.uuid, True, slot_idx_shadowheart),
             )),
             bg3.flag_group('Tag', (
                 bg3.flag(bg3.TAG_SHORT, True, slot_idx_tav),
@@ -279,7 +279,7 @@ def create_hugs_dialogs() -> None:
         [hug_first_reaction_node_uuid, hug_reaction_partnered_node_uuid, hug_reaction_dating_node_uuid, hug_reaction_node_uuid],
         checkflags = (
             bg3.flag_group('Object', (
-                bg3.flag(ORI_Shadowheart_State_SmilesWhenHugged.uuid, True, slot_idx_shadowheart),
+                bg3.flag(Shadowheart_State_Smiles_When_Hugged.uuid, True, slot_idx_shadowheart),
             )),
             bg3.flag_group('Tag', (
                 bg3.flag(bg3.TAG_DWARF, True, slot_idx_tav),
@@ -301,7 +301,7 @@ def create_hugs_dialogs() -> None:
         [hug_first_reaction_node_uuid, hug_reaction_partnered_node_uuid, hug_reaction_dating_node_uuid, hug_reaction_node_uuid],
         checkflags = (
             bg3.flag_group('Object', (
-                bg3.flag(ORI_Shadowheart_State_SmilesWhenHugged.uuid, True, slot_idx_shadowheart),
+                bg3.flag(Shadowheart_State_Smiles_When_Hugged.uuid, True, slot_idx_shadowheart),
             )),
             bg3.flag_group('Tag', (
                 bg3.flag(bg3.TAG_DRAGONBORN, True, slot_idx_tav),
@@ -323,7 +323,7 @@ def create_hugs_dialogs() -> None:
         [hug_first_reaction_node_uuid, hug_reaction_partnered_node_uuid, hug_reaction_dating_node_uuid, hug_reaction_node_uuid],
         checkflags = (
             bg3.flag_group('Object', (
-                bg3.flag(ORI_Shadowheart_State_SmilesWhenHugged.uuid, True, slot_idx_shadowheart),
+                bg3.flag(Shadowheart_State_Smiles_When_Hugged.uuid, True, slot_idx_shadowheart),
             )),
         )
     )
@@ -339,12 +339,12 @@ def create_hugs_dialogs() -> None:
         bg3.text_content('h7cc0a098g7cd0g419fga0e2g14719699b80e', 2),
         checkflags = (
             bg3.flag_group('Object', (
-                bg3.flag(ORI_Shadowheart_State_HugReaction.uuid, False, slot_idx_shadowheart),
+                bg3.flag(Shadowheart_State_Hug_Reaction.uuid, False, slot_idx_shadowheart),
             )),
         ),
         setflags = (
             bg3.flag_group('Object', (
-                bg3.flag(ORI_Shadowheart_State_HugReaction.uuid, True, slot_idx_shadowheart),
+                bg3.flag(Shadowheart_State_Hug_Reaction.uuid, True, slot_idx_shadowheart),
             )),
         ),
         end_node = True
@@ -401,8 +401,8 @@ def create_hugs_dialogs() -> None:
         end_node = True,
         setflags = (
             bg3.flag_group('Object', (
-                bg3.flag(ORI_Shadowheart_State_SmilesWhenHugged.uuid, True, slot_idx_shadowheart),
-                bg3.flag(ORI_Shadowheart_State_HugsEnabled.uuid, True, slot_idx_shadowheart),
+                bg3.flag(Shadowheart_State_Smiles_When_Hugged.uuid, True, slot_idx_shadowheart),
+                bg3.flag(Shadowheart_State_Hugs_Enabled.uuid, True, slot_idx_shadowheart),
             )),
         )
     )
@@ -443,51 +443,52 @@ def create_hugs_timeline() -> None:
     ###########################################################################
     # Normal body type
     ###########################################################################
-    t.create_new_phase(hug_normal_node_uuid, 20.67)
+    phase_duration = 24.55 # 20.67 + 3.88
+    t.create_new_phase(hug_normal_node_uuid, phase_duration)
 
-    t.create_tl_actor_node(bg3.timeline_object.ATTITUDE, bg3.SPEAKER_SHADOWHEART, 0.0, 20.67, (), is_snapped_to_end = True)
-    t.create_tl_actor_node(bg3.timeline_object.ATTITUDE, bg3.SPEAKER_PLAYER, 0.0, 20.67, (
+    t.create_tl_actor_node(bg3.timeline_object.ATTITUDE, bg3.SPEAKER_SHADOWHEART, 0.0, phase_duration, (), is_snapped_to_end = True)
+    t.create_tl_actor_node(bg3.timeline_object.ATTITUDE, bg3.SPEAKER_PLAYER, 0.0, phase_duration, (
         t.create_attitude_key(0.0, '7f6ccd67-aa7d-4803-ad7f-629c7783e83f', '375d49d9-707a-42fb-a7f5-7bccba35a6ea'),
     ), is_snapped_to_end = True)
-    t.create_tl_actor_node(bg3.timeline_object.ATTITUDE, bg3.PEANUT_SLOT_0, 0.0, 20.67, (
+    t.create_tl_actor_node(bg3.timeline_object.ATTITUDE, bg3.PEANUT_SLOT_0, 0.0, phase_duration, (
         t.create_attitude_key(0.5, '7f6ccd67-aa7d-4803-ad7f-629c7783e83f', '375d49d9-707a-42fb-a7f5-7bccba35a6ea'),
     ), is_snapped_to_end = True, is_mimicry = True)
-    t.create_tl_actor_node(bg3.timeline_object.ATTITUDE, bg3.PEANUT_SLOT_1, 0.0, 20.67, (
+    t.create_tl_actor_node(bg3.timeline_object.ATTITUDE, bg3.PEANUT_SLOT_1, 0.0, phase_duration, (
         t.create_attitude_key(0.5, '7f6ccd67-aa7d-4803-ad7f-629c7783e83f', '375d49d9-707a-42fb-a7f5-7bccba35a6ea'),
     ), is_snapped_to_end = True, is_mimicry = True)
-    t.create_tl_actor_node(bg3.timeline_object.ATTITUDE, bg3.PEANUT_SLOT_2, 0.0, 20.67, (
+    t.create_tl_actor_node(bg3.timeline_object.ATTITUDE, bg3.PEANUT_SLOT_2, 0.0, phase_duration, (
         t.create_attitude_key(0.5, '7f6ccd67-aa7d-4803-ad7f-629c7783e83f', '375d49d9-707a-42fb-a7f5-7bccba35a6ea'),
     ), is_snapped_to_end = True, is_mimicry = True)
 
 
-    t.create_tl_actor_node(bg3.timeline_object.EMOTION, bg3.SPEAKER_SHADOWHEART, 0.0, 20.67, (
+    t.create_tl_actor_node(bg3.timeline_object.EMOTION, bg3.SPEAKER_SHADOWHEART, 0.0, phase_duration, (
         t.create_emotion_key(0.0, 2),
-        t.create_emotion_key(1.34, 2, variation = 2),
-        t.create_emotion_key(15.79, 2, variation = 1),
+        t.create_emotion_key(1.34 + 3.88, 2, variation = 2),
+        t.create_emotion_key(15.79 + 3.88, 2, variation = 1),
     ), is_snapped_to_end = True)
-    t.create_tl_actor_node(bg3.timeline_object.EMOTION, bg3.SPEAKER_PLAYER, 0.0, 20.67, (
-        t.create_emotion_key(5.99, 2, variation = 1),
-        t.create_emotion_key(8.83, 2, variation = 2),
-        t.create_emotion_key(12.08, 2, variation = 1),
+    t.create_tl_actor_node(bg3.timeline_object.EMOTION, bg3.SPEAKER_PLAYER, 0.0, phase_duration, (
+        t.create_emotion_key(5.99 + 3.88, 2, variation = 1),
+        t.create_emotion_key(8.83 + 3.88, 2, variation = 2),
+        t.create_emotion_key(12.08 + 3.88, 2, variation = 1),
     ), is_snapped_to_end = True)
-    t.create_tl_actor_node(bg3.timeline_object.EMOTION, bg3.PEANUT_SLOT_0, 0.0, 20.67, (
+    t.create_tl_actor_node(bg3.timeline_object.EMOTION, bg3.PEANUT_SLOT_0, 0.0, phase_duration, (
         t.create_emotion_key(0.0, 2),
-        t.create_emotion_key(1.34, 2, variation = 1),
-        t.create_emotion_key(15.79, 2),
+        t.create_emotion_key(1.34 + 3.88, 2, variation = 1),
+        t.create_emotion_key(15.79 + 3.88, 2),
     ), is_snapped_to_end = True, is_mimicry = True)
-    t.create_tl_actor_node(bg3.timeline_object.EMOTION, bg3.PEANUT_SLOT_1, 0.0, 20.67, (
+    t.create_tl_actor_node(bg3.timeline_object.EMOTION, bg3.PEANUT_SLOT_1, 0.0, phase_duration, (
         t.create_emotion_key(0.0, 2),
-        t.create_emotion_key(1.34, 2, variation = 1),
-        t.create_emotion_key(15.79, 2),
+        t.create_emotion_key(1.34 + 3.88, 2, variation = 1),
+        t.create_emotion_key(15.79 + 3.88, 2),
     ), is_snapped_to_end = True, is_mimicry = True)
-    t.create_tl_actor_node(bg3.timeline_object.EMOTION, bg3.PEANUT_SLOT_2, 0.0, 20.67, (
+    t.create_tl_actor_node(bg3.timeline_object.EMOTION, bg3.PEANUT_SLOT_2, 0.0, phase_duration, (
         t.create_emotion_key(0.0, 2),
-        t.create_emotion_key(1.34, 2, variation = 1),
-        t.create_emotion_key(15.79, 2),
+        t.create_emotion_key(1.34 + 3.88, 2, variation = 1),
+        t.create_emotion_key(15.79 + 3.88, 2),
     ), is_snapped_to_end = True, is_mimicry = True)
 
 
-    t.create_tl_actor_node(bg3.timeline_object.LOOK_AT, bg3.SPEAKER_SHADOWHEART, 0.0, 20.67, (
+    t.create_tl_actor_node(bg3.timeline_object.LOOK_AT, bg3.SPEAKER_SHADOWHEART, 0.0, phase_duration, (
         t.create_look_at_key(
             0.0,
             target = bg3.SPEAKER_PLAYER,
@@ -503,7 +504,7 @@ def create_hugs_timeline() -> None:
             eye_look_at_bone = 'Head_M'
         ),
     ), is_snapped_to_end = True)
-    t.create_tl_actor_node(bg3.timeline_object.LOOK_AT, bg3.SPEAKER_PLAYER, 0.0, 20.67, (
+    t.create_tl_actor_node(bg3.timeline_object.LOOK_AT, bg3.SPEAKER_PLAYER, 0.0, phase_duration, (
         t.create_look_at_key(
             0.0,
             target = bg3.SPEAKER_SHADOWHEART,
@@ -519,7 +520,7 @@ def create_hugs_timeline() -> None:
             eye_look_at_bone = 'Head_M'
         ),
     ), is_snapped_to_end = True)
-    t.create_tl_actor_node(bg3.timeline_object.LOOK_AT, bg3.PEANUT_SLOT_0, 0.0, 20.67, (
+    t.create_tl_actor_node(bg3.timeline_object.LOOK_AT, bg3.PEANUT_SLOT_0, 0.0, phase_duration, (
         t.create_look_at_key(
             0.0,
             target = bg3.SPEAKER_SHADOWHEART,
@@ -535,7 +536,7 @@ def create_hugs_timeline() -> None:
             eye_look_at_bone = 'Head_M'
         ),
     ), is_snapped_to_end = True, is_mimicry = True)
-    t.create_tl_actor_node(bg3.timeline_object.LOOK_AT, bg3.PEANUT_SLOT_1, 0.0, 20.67, (
+    t.create_tl_actor_node(bg3.timeline_object.LOOK_AT, bg3.PEANUT_SLOT_1, 0.0, phase_duration, (
         t.create_look_at_key(
             0.0,
             target = bg3.SPEAKER_SHADOWHEART,
@@ -551,7 +552,7 @@ def create_hugs_timeline() -> None:
             eye_look_at_bone = 'Head_M'
         ),
     ), is_snapped_to_end = True, is_mimicry = True)
-    t.create_tl_actor_node(bg3.timeline_object.LOOK_AT, bg3.PEANUT_SLOT_2, 0.0, 20.67, (
+    t.create_tl_actor_node(bg3.timeline_object.LOOK_AT, bg3.PEANUT_SLOT_2, 0.0, phase_duration, (
         t.create_look_at_key(
             0.0,
             target = bg3.SPEAKER_SHADOWHEART,
@@ -568,10 +569,10 @@ def create_hugs_timeline() -> None:
         ),
     ), is_snapped_to_end = True, is_mimicry = True)
 
-    t.create_tl_non_actor_node(bg3.timeline_object.SWITCH_LOCATION, 0.0, 20.67, (), is_snapped_to_end = True)
+    t.create_tl_non_actor_node(bg3.timeline_object.SWITCH_LOCATION, 0.0, phase_duration, (), is_snapped_to_end = True)
 
     # Place Shadowheart
-    t.create_tl_transform(bg3.SPEAKER_SHADOWHEART, 0.0, 20.67, (
+    t.create_tl_transform(bg3.SPEAKER_SHADOWHEART, 0.0, phase_duration, (
         (
             #t.create_value_key(time = 0.0, interpolation_type = 5, value = 0.10027611),
             t.create_value_key(time = 0.0, interpolation_type = 5, value = -0.282674465),
@@ -593,7 +594,7 @@ def create_hugs_timeline() -> None:
         (),
     ), is_snapped_to_end = True)
     # Place Player
-    t.create_tl_transform(bg3.SPEAKER_PLAYER, 0.0, 20.67, (
+    t.create_tl_transform(bg3.SPEAKER_PLAYER, 0.0, phase_duration, (
         (
             #t.create_value_key(time = 0.0, interpolation_type = 5, value = 0.66562504),
             t.create_value_key(time = 0.0, interpolation_type = 5, value = 0.282674465),
@@ -615,77 +616,113 @@ def create_hugs_timeline() -> None:
         (),
     ), is_snapped_to_end = True)
 
-    t.create_tl_animation(bg3.SPEAKER_PLAYER, 0.0, 9.18, '882164de-1f6b-4d2a-b336-1f366cb36f14', 'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
-                        fade_in = 0.0, fade_out = 0.94, animation_play_start_offset = 3.88)
-    t.create_tl_animation(bg3.SPEAKER_SHADOWHEART, 0.0, 9.18, 'a46f695f-051b-be6d-20cd-32f733524930', 'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
-                        fade_in = 0.0, fade_out = 0.94, animation_play_start_offset = 3.88)
+    t.create_tl_animation(
+        bg3.SPEAKER_PLAYER,
+        0.0, 9.18 + 3.88,
+        '882164de-1f6b-4d2a-b336-1f366cb36f14',
+        'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
+        fade_in = 0.0,
+        fade_out = 0.94)
+    t.create_tl_animation(
+        bg3.SPEAKER_SHADOWHEART,
+        0.0, 9.18 + 3.88,
+        'a46f695f-051b-be6d-20cd-32f733524930',
+        'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
+        fade_in = 0.0,
+        fade_out = 0.94)
 
     #t.create_tl_shot('befcdee8-6352-4be6-b2ea-23c2ac0dfe60', 0.0, 10.23)
-    t.create_tl_shot('fb91b3e2-b1b9-47d5-8478-659cececad9b', 0.0, 3.44)
-    t.create_tl_shot('befcdee8-6352-4be6-b2ea-23c2ac0dfe60', 3.44, 10.23)
+    t.create_tl_shot('fb91b3e2-b1b9-47d5-8478-659cececad9b', 0.0, 3.44 + 3.88)
+    t.create_tl_shot('befcdee8-6352-4be6-b2ea-23c2ac0dfe60', 3.44 + 3.88, 10.23 + 3.88)
 
-    t.create_tl_animation(bg3.SPEAKER_PLAYER, 8.24, 17.79, '882164de-1f6b-4d2a-b336-1f366cb36f14', 'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
-                        fade_in = 0.0, fade_out = 0.0, animation_play_start_offset = 6.29)
-    t.create_tl_animation(bg3.SPEAKER_SHADOWHEART, 8.24, 17.79, 'a46f695f-051b-be6d-20cd-32f733524930', 'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
-                        fade_in = 0.0, fade_out = 0.0, animation_play_start_offset = 6.29)
+    t.create_tl_animation(
+        bg3.SPEAKER_PLAYER,
+        8.24 + 3.88, 17.79 + 3.88,
+        '882164de-1f6b-4d2a-b336-1f366cb36f14',
+        'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
+        fade_in = 0.0,
+        fade_out = 0.0,
+        animation_play_start_offset = 6.29)
+    t.create_tl_animation(
+        bg3.SPEAKER_SHADOWHEART,
+        8.24 + 3.88, 17.79 + 3.88,
+        'a46f695f-051b-be6d-20cd-32f733524930',
+        'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
+        fade_in = 0.0,
+        fade_out = 0.0,
+        animation_play_start_offset = 6.29)
 
     #t.create_tl_shot('18c5bd4f-c066-4c52-8cdb-d8bbe1d8034e', 10.23, 20.67, is_snapped_to_end = True)
-    t.create_tl_shot('18c5bd4f-c066-4c52-8cdb-d8bbe1d8034e', 10.23, 17.79)
-    t.create_tl_shot('cb95fcb5-efd7-48f4-9352-5eaeb3e44274', 17.79, 20.67, is_snapped_to_end = True)
+    t.create_tl_shot('18c5bd4f-c066-4c52-8cdb-d8bbe1d8034e', 10.23 + 3.88, 17.79 + 3.88)
+    t.create_tl_shot('cb95fcb5-efd7-48f4-9352-5eaeb3e44274', 17.79 + 3.88, phase_duration, is_snapped_to_end = True)
 
-    t.create_tl_animation(bg3.SPEAKER_PLAYER, 17.79, 20.67, '882164de-1f6b-4d2a-b336-1f366cb36f14', 'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
-                        fade_in = 0.0, fade_out = 2.0, animation_play_start_offset = 16.79, is_snapped_to_end = True)
-    t.create_tl_animation(bg3.SPEAKER_SHADOWHEART, 17.79, 20.67, 'a46f695f-051b-be6d-20cd-32f733524930', 'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
-                        fade_in = 0.0, fade_out = 1.44, animation_play_start_offset = 16.79, is_snapped_to_end = True)
+    t.create_tl_animation(
+        bg3.SPEAKER_PLAYER,
+        17.79 + 3.88, phase_duration,
+        '882164de-1f6b-4d2a-b336-1f366cb36f14',
+        'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
+        fade_in = 0.0,
+        fade_out = 2.0,
+        animation_play_start_offset = 16.79,
+        is_snapped_to_end = True)
+    t.create_tl_animation(
+        bg3.SPEAKER_SHADOWHEART,
+        17.79 + 3.88, phase_duration,
+        'a46f695f-051b-be6d-20cd-32f733524930',
+        'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
+        fade_in = 0.0,
+        fade_out = 1.44,
+        animation_play_start_offset = 16.79,
+        is_snapped_to_end = True)
 
 
     ###########################################################################
     # Normal body type, sad hug
     ###########################################################################
-    t.create_new_phase(hug_sad_normal_node_uuid, 20.67)
+    t.create_new_phase(hug_sad_normal_node_uuid, phase_duration)
 
-    t.create_tl_actor_node(bg3.timeline_object.ATTITUDE, bg3.SPEAKER_SHADOWHEART, 0.0, 20.67, (), is_snapped_to_end = True)
-    t.create_tl_actor_node(bg3.timeline_object.ATTITUDE, bg3.SPEAKER_PLAYER, 0.0, 20.67, (
+    t.create_tl_actor_node(bg3.timeline_object.ATTITUDE, bg3.SPEAKER_SHADOWHEART, 0.0, phase_duration, (), is_snapped_to_end = True)
+    t.create_tl_actor_node(bg3.timeline_object.ATTITUDE, bg3.SPEAKER_PLAYER, 0.0, phase_duration, (
         t.create_attitude_key(0.0, '7f6ccd67-aa7d-4803-ad7f-629c7783e83f', '375d49d9-707a-42fb-a7f5-7bccba35a6ea'),
     ), is_snapped_to_end = True)
-    t.create_tl_actor_node(bg3.timeline_object.ATTITUDE, bg3.PEANUT_SLOT_0, 0.0, 20.67, (
+    t.create_tl_actor_node(bg3.timeline_object.ATTITUDE, bg3.PEANUT_SLOT_0, 0.0, phase_duration, (
         t.create_attitude_key(0.5, '7f6ccd67-aa7d-4803-ad7f-629c7783e83f', '375d49d9-707a-42fb-a7f5-7bccba35a6ea'),
     ), is_snapped_to_end = True, is_mimicry = True)
-    t.create_tl_actor_node(bg3.timeline_object.ATTITUDE, bg3.PEANUT_SLOT_1, 0.0, 20.67, (
+    t.create_tl_actor_node(bg3.timeline_object.ATTITUDE, bg3.PEANUT_SLOT_1, 0.0, phase_duration, (
         t.create_attitude_key(0.5, '7f6ccd67-aa7d-4803-ad7f-629c7783e83f', '375d49d9-707a-42fb-a7f5-7bccba35a6ea'),
     ), is_snapped_to_end = True, is_mimicry = True)
-    t.create_tl_actor_node(bg3.timeline_object.ATTITUDE, bg3.PEANUT_SLOT_2, 0.0, 20.67, (
+    t.create_tl_actor_node(bg3.timeline_object.ATTITUDE, bg3.PEANUT_SLOT_2, 0.0, phase_duration, (
         t.create_attitude_key(0.5, '7f6ccd67-aa7d-4803-ad7f-629c7783e83f', '375d49d9-707a-42fb-a7f5-7bccba35a6ea'),
     ), is_snapped_to_end = True, is_mimicry = True)
 
-    t.create_tl_actor_node(bg3.timeline_object.EMOTION, bg3.SPEAKER_SHADOWHEART, 0.0, 20.67, (
+    t.create_tl_actor_node(bg3.timeline_object.EMOTION, bg3.SPEAKER_SHADOWHEART, 0.0, phase_duration, (
         t.create_emotion_key(0.0, 32, variation = 2),
-        t.create_emotion_key(1.34, 32, variation = 24),
-        t.create_emotion_key(15.79, 32, variation = 1),
+        t.create_emotion_key(1.34 + 3.88, 32, variation = 24),
+        t.create_emotion_key(15.79 + 3.88, 32, variation = 1),
     ), is_snapped_to_end = True)
-    t.create_tl_actor_node(bg3.timeline_object.EMOTION, bg3.SPEAKER_PLAYER, 0.0, 20.67, (
-        t.create_emotion_key(5.99, 32, variation = 1),
-        t.create_emotion_key(8.83, 2048, variation = 2),
-        t.create_emotion_key(12.08, 32, variation = 1),
-        t.create_emotion_key(17.79, 2048, variation = 1),
+    t.create_tl_actor_node(bg3.timeline_object.EMOTION, bg3.SPEAKER_PLAYER, 0.0, phase_duration, (
+        t.create_emotion_key(5.99 + 3.88, 32, variation = 1),
+        t.create_emotion_key(8.83 + 3.88, 2048, variation = 2),
+        t.create_emotion_key(12.08 + 3.88, 32, variation = 1),
+        t.create_emotion_key(17.79 + 3.88, 2048, variation = 1),
     ))
-    t.create_tl_actor_node(bg3.timeline_object.EMOTION, bg3.PEANUT_SLOT_0, 0.0, 20.67, (
+    t.create_tl_actor_node(bg3.timeline_object.EMOTION, bg3.PEANUT_SLOT_0, 0.0, phase_duration, (
         t.create_emotion_key(0.0, 32),
-        t.create_emotion_key(1.34, 32, variation = 1),
-        t.create_emotion_key(15.79, 32),
+        t.create_emotion_key(1.34 + 3.88, 32, variation = 1),
+        t.create_emotion_key(15.79 + 3.88, 32),
     ), is_snapped_to_end = True, is_mimicry = True)
-    t.create_tl_actor_node(bg3.timeline_object.EMOTION, bg3.PEANUT_SLOT_1, 0.0, 20.67, (
+    t.create_tl_actor_node(bg3.timeline_object.EMOTION, bg3.PEANUT_SLOT_1, 0.0, phase_duration, (
         t.create_emotion_key(0.0, 32),
-        t.create_emotion_key(1.34, 32, variation = 1),
-        t.create_emotion_key(15.79, 32),
+        t.create_emotion_key(1.34 + 3.88, 32, variation = 1),
+        t.create_emotion_key(15.79 + 3.88, 32),
     ), is_snapped_to_end = True, is_mimicry = True)
-    t.create_tl_actor_node(bg3.timeline_object.EMOTION, bg3.PEANUT_SLOT_2, 0.0, 20.67, (
+    t.create_tl_actor_node(bg3.timeline_object.EMOTION, bg3.PEANUT_SLOT_2, 0.0, phase_duration, (
         t.create_emotion_key(0.0, 32),
-        t.create_emotion_key(1.34, 32, variation = 1),
-        t.create_emotion_key(15.79, 32),
+        t.create_emotion_key(1.34 + 3.88, 32, variation = 1),
+        t.create_emotion_key(15.79 + 3.88, 32),
     ), is_snapped_to_end = True, is_mimicry = True)
 
-    t.create_tl_actor_node(bg3.timeline_object.LOOK_AT, bg3.SPEAKER_SHADOWHEART, 0.0, 20.67, (
+    t.create_tl_actor_node(bg3.timeline_object.LOOK_AT, bg3.SPEAKER_SHADOWHEART, 0.0, phase_duration, (
         t.create_look_at_key(
             0.0,
             target = bg3.SPEAKER_PLAYER,
@@ -701,7 +738,7 @@ def create_hugs_timeline() -> None:
             eye_look_at_bone = 'Head_M'
         ),
     ), is_snapped_to_end = True)
-    t.create_tl_actor_node(bg3.timeline_object.LOOK_AT, bg3.SPEAKER_PLAYER, 0.0, 20.67, (
+    t.create_tl_actor_node(bg3.timeline_object.LOOK_AT, bg3.SPEAKER_PLAYER, 0.0, phase_duration, (
         t.create_look_at_key(
             0.0,
             target = bg3.SPEAKER_SHADOWHEART,
@@ -717,7 +754,7 @@ def create_hugs_timeline() -> None:
             eye_look_at_bone = 'Head_M'
         ),
     ), is_snapped_to_end = True)
-    t.create_tl_actor_node(bg3.timeline_object.LOOK_AT, bg3.PEANUT_SLOT_0, 0.0, 20.67, (
+    t.create_tl_actor_node(bg3.timeline_object.LOOK_AT, bg3.PEANUT_SLOT_0, 0.0, phase_duration, (
         t.create_look_at_key(
             0.0,
             target = bg3.SPEAKER_SHADOWHEART,
@@ -733,7 +770,7 @@ def create_hugs_timeline() -> None:
             eye_look_at_bone = 'Head_M'
         ),
     ), is_snapped_to_end = True, is_mimicry = True)
-    t.create_tl_actor_node(bg3.timeline_object.LOOK_AT, bg3.PEANUT_SLOT_1, 0.0, 20.67, (
+    t.create_tl_actor_node(bg3.timeline_object.LOOK_AT, bg3.PEANUT_SLOT_1, 0.0, phase_duration, (
         t.create_look_at_key(
             0.0,
             target = bg3.SPEAKER_SHADOWHEART,
@@ -749,7 +786,7 @@ def create_hugs_timeline() -> None:
             eye_look_at_bone = 'Head_M'
         ),
     ), is_snapped_to_end = True, is_mimicry = True)
-    t.create_tl_actor_node(bg3.timeline_object.LOOK_AT, bg3.PEANUT_SLOT_2, 0.0, 20.67, (
+    t.create_tl_actor_node(bg3.timeline_object.LOOK_AT, bg3.PEANUT_SLOT_2, 0.0, phase_duration, (
         t.create_look_at_key(
             0.0,
             target = bg3.SPEAKER_SHADOWHEART,
@@ -766,10 +803,10 @@ def create_hugs_timeline() -> None:
         ),
     ), is_snapped_to_end = True, is_mimicry = True)
 
-    t.create_tl_non_actor_node(bg3.timeline_object.SWITCH_LOCATION, 0.0, 20.67, (), is_snapped_to_end = True)
+    t.create_tl_non_actor_node(bg3.timeline_object.SWITCH_LOCATION, 0.0, phase_duration, (), is_snapped_to_end = True)
 
     # Place Shadowheart
-    t.create_tl_transform(bg3.SPEAKER_SHADOWHEART, 0.0, 20.67, (
+    t.create_tl_transform(bg3.SPEAKER_SHADOWHEART, 0.0, phase_duration, (
         (
             #t.create_value_key(time = 0.0, interpolation_type = 5, value = 0.10027611),
             t.create_value_key(time = 0.0, interpolation_type = 5, value = -0.282674465),
@@ -791,7 +828,7 @@ def create_hugs_timeline() -> None:
         (),
     ), is_snapped_to_end = True)
     # Place Player
-    t.create_tl_transform(bg3.SPEAKER_PLAYER, 0.0, 20.67, (
+    t.create_tl_transform(bg3.SPEAKER_PLAYER, 0.0, phase_duration, (
         (
             #t.create_value_key(time = 0.0, interpolation_type = 5, value = 0.66562504),
             t.create_value_key(time = 0.0, interpolation_type = 5, value = 0.282674465),
@@ -814,26 +851,62 @@ def create_hugs_timeline() -> None:
     ), is_snapped_to_end = True)
 
 
-    t.create_tl_animation(bg3.SPEAKER_PLAYER, 0.0, 9.18, '882164de-1f6b-4d2a-b336-1f366cb36f14', 'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
-                        fade_in = 0.0, fade_out = 0.94, animation_play_start_offset = 3.88)
-    t.create_tl_animation(bg3.SPEAKER_SHADOWHEART, 0.0, 9.18, 'a46f695f-051b-be6d-20cd-32f733524930', 'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
-                        fade_in = 0.0, fade_out = 0.94, animation_play_start_offset = 3.88)
+    t.create_tl_animation(
+        bg3.SPEAKER_PLAYER,
+        0.0, 9.18 + 3.88,
+        '882164de-1f6b-4d2a-b336-1f366cb36f14',
+        'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
+        fade_in = 0.0,
+        fade_out = 0.94)
+    t.create_tl_animation(
+        bg3.SPEAKER_SHADOWHEART,
+        0.0, 9.18 + 3.88,
+        'a46f695f-051b-be6d-20cd-32f733524930',
+        'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
+        fade_in = 0.0,
+        fade_out = 0.94)
 
-    t.create_tl_shot('fb91b3e2-b1b9-47d5-8478-659cececad9b', 0.0, 3.44)
-    t.create_tl_shot('befcdee8-6352-4be6-b2ea-23c2ac0dfe60', 3.44, 10.23)
+    t.create_tl_shot('fb91b3e2-b1b9-47d5-8478-659cececad9b', 0.0, 3.44 + 3.88)
+    t.create_tl_shot('befcdee8-6352-4be6-b2ea-23c2ac0dfe60', 3.44 + 3.88, 10.23 + 3.88)
 
-    t.create_tl_animation(bg3.SPEAKER_PLAYER, 8.24, 17.79, '882164de-1f6b-4d2a-b336-1f366cb36f14', 'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
-                        fade_in = 0.0, fade_out = 0.0, animation_play_start_offset = 6.29)
-    t.create_tl_animation(bg3.SPEAKER_SHADOWHEART, 8.24, 17.79, 'a46f695f-051b-be6d-20cd-32f733524930', 'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
-                        fade_in = 0.0, fade_out = 0.0, animation_play_start_offset = 6.29)
+    t.create_tl_animation(
+        bg3.SPEAKER_PLAYER,
+        8.24 + 3.88, 17.79 + 3.88,
+        '882164de-1f6b-4d2a-b336-1f366cb36f14',
+        'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
+        fade_in = 0.0,
+        fade_out = 0.0,
+        animation_play_start_offset = 6.29)
+    t.create_tl_animation(
+        bg3.SPEAKER_SHADOWHEART,
+        8.24 + 3.88, 17.79 + 3.88,
+        'a46f695f-051b-be6d-20cd-32f733524930',
+        'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
+        fade_in = 0.0,
+        fade_out = 0.0,
+        animation_play_start_offset = 6.29)
 
-    t.create_tl_shot('18c5bd4f-c066-4c52-8cdb-d8bbe1d8034e', 10.23, 17.79)
-    t.create_tl_shot('cb95fcb5-efd7-48f4-9352-5eaeb3e44274', 17.79, 20.67, is_snapped_to_end = True)
+    t.create_tl_shot('18c5bd4f-c066-4c52-8cdb-d8bbe1d8034e', 10.23 + 3.88, 17.79 + 3.88)
+    t.create_tl_shot('cb95fcb5-efd7-48f4-9352-5eaeb3e44274', 17.79 + 3.88, phase_duration, is_snapped_to_end = True)
 
-    t.create_tl_animation(bg3.SPEAKER_PLAYER, 17.79, 20.67, '882164de-1f6b-4d2a-b336-1f366cb36f14', 'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
-                        fade_in = 0.0, fade_out = 2.0, animation_play_start_offset = 16.79, is_snapped_to_end = True)
-    t.create_tl_animation(bg3.SPEAKER_SHADOWHEART, 17.79, 20.67, 'a46f695f-051b-be6d-20cd-32f733524930', 'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
-                        fade_in = 0.0, fade_out = 1.44, animation_play_start_offset = 16.79, is_snapped_to_end = True)
+    t.create_tl_animation(
+        bg3.SPEAKER_PLAYER,
+        17.79 + 3.88, phase_duration,
+        '882164de-1f6b-4d2a-b336-1f366cb36f14',
+        'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
+        fade_in = 0.0,
+        fade_out = 2.0,
+        animation_play_start_offset = 16.79,
+        is_snapped_to_end = True)
+    t.create_tl_animation(
+        bg3.SPEAKER_SHADOWHEART,
+        17.79 + 3.88, phase_duration,
+        'a46f695f-051b-be6d-20cd-32f733524930',
+        'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
+        fade_in = 0.0,
+        fade_out = 1.44,
+        animation_play_start_offset = 16.79,
+        is_snapped_to_end = True)
 
 
     ###########################################################################
@@ -845,20 +918,60 @@ def create_hugs_timeline() -> None:
         skip_tl_nodes = ('TLAnimation', 'TLShot')
     )
 
-    t.create_tl_shot('befcdee8-6352-4be6-b2ea-23c2ac0dfe60', 0.0, 20.67, is_snapped_to_end = True)
+    t.create_tl_shot('fb91b3e2-b1b9-47d5-8478-659cececad9b', 0.0, 3.44 + 3.88)
+    t.create_tl_shot('befcdee8-6352-4be6-b2ea-23c2ac0dfe60', 3.44 + 3.88, 17.79 + 3.88)
 
-    t.create_tl_animation(bg3.SPEAKER_PLAYER, 0.0, 9.18, 'fb8fbad0-57be-4c54-936b-a58c8fa46876', 'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
-                        fade_in = 0.0, fade_out = 0.94, animation_play_start_offset = 3.88)
-    t.create_tl_animation(bg3.SPEAKER_SHADOWHEART, 0.0, 9.18, 'd8684f69-0a63-33dd-3304-87e0128c21ba', 'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
-                        fade_in = 0.0, fade_out = 0.94, animation_play_start_offset = 3.88)
-    t.create_tl_animation(bg3.SPEAKER_PLAYER, 8.24, 17.79, 'fb8fbad0-57be-4c54-936b-a58c8fa46876', 'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
-                        fade_in = 0.0, fade_out = 0.0, animation_play_start_offset = 6.29)
-    t.create_tl_animation(bg3.SPEAKER_SHADOWHEART, 8.24, 17.79, 'd8684f69-0a63-33dd-3304-87e0128c21ba', 'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
-                        fade_in = 0.0, fade_out = 0.0, animation_play_start_offset = 6.29)
-    t.create_tl_animation(bg3.SPEAKER_PLAYER, 17.79, 20.67, 'fb8fbad0-57be-4c54-936b-a58c8fa46876', 'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
-                        fade_in = 0.0, fade_out = 2.0, animation_play_start_offset = 16.79, is_snapped_to_end = True)
-    t.create_tl_animation(bg3.SPEAKER_SHADOWHEART, 17.79, 20.67, 'd8684f69-0a63-33dd-3304-87e0128c21ba', 'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
-                        fade_in = 0.0, fade_out = 1.44, animation_play_start_offset = 16.79, is_snapped_to_end = True)
+    t.create_tl_animation(
+        bg3.SPEAKER_PLAYER,
+        0.0, 9.18 + 3.88,
+        'fb8fbad0-57be-4c54-936b-a58c8fa46876',
+        'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
+        fade_in = 0.0,
+        fade_out = 0.94)
+    t.create_tl_animation(
+        bg3.SPEAKER_SHADOWHEART,
+        0.0, 9.18 + 3.88,
+        'd8684f69-0a63-33dd-3304-87e0128c21ba',
+        'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
+        fade_in = 0.0,
+        fade_out = 0.94)
+    t.create_tl_animation(
+        bg3.SPEAKER_PLAYER,
+        8.24 + 3.88, 17.79 + 3.88,
+        'fb8fbad0-57be-4c54-936b-a58c8fa46876',
+        'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
+        fade_in = 0.0,
+        fade_out = 0.0,
+        animation_play_start_offset = 6.29)
+    t.create_tl_animation(
+        bg3.SPEAKER_SHADOWHEART,
+        8.24 + 3.88, 17.79 + 3.88,
+        'd8684f69-0a63-33dd-3304-87e0128c21ba',
+        'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
+        fade_in = 0.0,
+        fade_out = 0.0,
+        animation_play_start_offset = 6.29)
+
+    t.create_tl_shot('cb95fcb5-efd7-48f4-9352-5eaeb3e44274', 17.79 + 3.88, phase_duration, is_snapped_to_end = True)
+
+    t.create_tl_animation(
+        bg3.SPEAKER_PLAYER,
+        17.79 + 3.88, phase_duration,
+        'fb8fbad0-57be-4c54-936b-a58c8fa46876',
+        'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
+        fade_in = 0.0,
+        fade_out = 2.0,
+        animation_play_start_offset = 16.79,
+        is_snapped_to_end = True)
+    t.create_tl_animation(
+        bg3.SPEAKER_SHADOWHEART,
+        17.79 + 3.88, phase_duration,
+        'd8684f69-0a63-33dd-3304-87e0128c21ba',
+        'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
+        fade_in = 0.0,
+        fade_out = 1.44,
+        animation_play_start_offset = 16.79,
+        is_snapped_to_end = True)
 
 
     ###########################################################################
@@ -870,20 +983,60 @@ def create_hugs_timeline() -> None:
         skip_tl_nodes = ('TLAnimation', 'TLShot')
     )
 
-    t.create_tl_shot('befcdee8-6352-4be6-b2ea-23c2ac0dfe60', 0.0, 20.67, is_snapped_to_end = True)
+    t.create_tl_shot('fb91b3e2-b1b9-47d5-8478-659cececad9b', 0.0, 3.44 + 3.88)
+    t.create_tl_shot('befcdee8-6352-4be6-b2ea-23c2ac0dfe60', 3.44 + 3.88, 17.79 + 3.88)
 
-    t.create_tl_animation(bg3.SPEAKER_PLAYER, 0.0, 9.18, 'fb8fbad0-57be-4c54-936b-a58c8fa46876', 'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
-                        fade_in = 0.0, fade_out = 0.94, animation_play_start_offset = 3.88)
-    t.create_tl_animation(bg3.SPEAKER_SHADOWHEART, 0.0, 9.18, 'd8684f69-0a63-33dd-3304-87e0128c21ba', 'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
-                        fade_in = 0.0, fade_out = 0.94, animation_play_start_offset = 3.88)
-    t.create_tl_animation(bg3.SPEAKER_PLAYER, 8.24, 17.79, 'fb8fbad0-57be-4c54-936b-a58c8fa46876', 'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
-                        fade_in = 0.0, fade_out = 0.0, animation_play_start_offset = 6.29)
-    t.create_tl_animation(bg3.SPEAKER_SHADOWHEART, 8.24, 17.79, 'd8684f69-0a63-33dd-3304-87e0128c21ba', 'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
-                        fade_in = 0.0, fade_out = 0.0, animation_play_start_offset = 6.29)
-    t.create_tl_animation(bg3.SPEAKER_PLAYER, 17.79, 20.67, 'fb8fbad0-57be-4c54-936b-a58c8fa46876', 'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
-                        fade_in = 0.0, fade_out = 2.0, animation_play_start_offset = 16.79, is_snapped_to_end = True)
-    t.create_tl_animation(bg3.SPEAKER_SHADOWHEART, 17.79, 20.67, 'd8684f69-0a63-33dd-3304-87e0128c21ba', 'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
-                        fade_in = 0.0, fade_out = 1.44, animation_play_start_offset = 16.79, is_snapped_to_end = True)
+    t.create_tl_animation(
+        bg3.SPEAKER_PLAYER,
+        0.0, 9.18 + 3.88,
+        'fb8fbad0-57be-4c54-936b-a58c8fa46876',
+        'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
+        fade_in = 0.0,
+        fade_out = 0.94)
+    t.create_tl_animation(
+        bg3.SPEAKER_SHADOWHEART,
+        0.0, 9.18 + 3.88,
+        'd8684f69-0a63-33dd-3304-87e0128c21ba',
+        'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
+        fade_in = 0.0,
+        fade_out = 0.94)
+    t.create_tl_animation(
+        bg3.SPEAKER_PLAYER,
+        8.24 + 3.88, 17.79 + 3.88,
+        'fb8fbad0-57be-4c54-936b-a58c8fa46876',
+        'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
+        fade_in = 0.0,
+        fade_out = 0.0,
+        animation_play_start_offset = 6.29)
+    t.create_tl_animation(
+        bg3.SPEAKER_SHADOWHEART,
+        8.24 + 3.88, 17.79 + 3.88,
+        'd8684f69-0a63-33dd-3304-87e0128c21ba',
+        'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
+        fade_in = 0.0,
+        fade_out = 0.0,
+        animation_play_start_offset = 6.29)
+
+    t.create_tl_shot('cb95fcb5-efd7-48f4-9352-5eaeb3e44274', 17.79 + 3.88, phase_duration, is_snapped_to_end = True)
+
+    t.create_tl_animation(
+        bg3.SPEAKER_PLAYER,
+        17.79 + 3.88, phase_duration,
+        'fb8fbad0-57be-4c54-936b-a58c8fa46876',
+        'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
+        fade_in = 0.0,
+        fade_out = 2.0,
+        animation_play_start_offset = 16.79,
+        is_snapped_to_end = True)
+    t.create_tl_animation(
+        bg3.SPEAKER_SHADOWHEART,
+        17.79 + 3.88, phase_duration,
+        'd8684f69-0a63-33dd-3304-87e0128c21ba',
+        'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
+        fade_in = 0.0,
+        fade_out = 1.44,
+        animation_play_start_offset = 16.79,
+        is_snapped_to_end = True)
 
 
     ###########################################################################
@@ -895,7 +1048,7 @@ def create_hugs_timeline() -> None:
         skip_tl_nodes = ('TLAnimation', 'TLTransform', 'TLShot')
     )
     # Place Shadowheart
-    t.create_tl_transform(bg3.SPEAKER_SHADOWHEART, 0.0, 20.67, (
+    t.create_tl_transform(bg3.SPEAKER_SHADOWHEART, 0.0, phase_duration, (
         (
             #t.create_value_key(time = 0.0, interpolation_type = 5, value = 0.35311571),
             t.create_value_key(time = 0.0, interpolation_type = 5, value = -0.13836698),
@@ -917,7 +1070,7 @@ def create_hugs_timeline() -> None:
         (),
     ), is_snapped_to_end = True)
     # Place Player
-    t.create_tl_transform(bg3.SPEAKER_PLAYER, 0.0, 20.67, (
+    t.create_tl_transform(bg3.SPEAKER_PLAYER, 0.0, phase_duration, (
         (
             #t.create_value_key(time = 0.0, interpolation_type = 5, value = 0.62984967),
             t.create_value_key(time = 0.0, interpolation_type = 5, value = 0.13836698),
@@ -938,20 +1091,65 @@ def create_hugs_timeline() -> None:
         ),
         (),
     ), is_snapped_to_end = True)
-    t.create_tl_animation(bg3.SPEAKER_PLAYER, 0.0, 9.77, '0a5b7810-3652-4465-876c-f6947aa618cf', 'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
-                        fade_in = 0.0, fade_out = 1.53, animation_play_start_offset = 3.88)
-    t.create_tl_animation(bg3.SPEAKER_SHADOWHEART, 0.0, 9.77, 'd3cb3816-2562-6bbc-2e32-6e956c325718', 'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
-                        fade_in = 0.0, fade_out = 1.53, animation_play_start_offset = 3.88)
-    t.create_tl_shot('befcdee8-6352-4be6-b2ea-23c2ac0dfe60', 0.0, 10.23)
-    t.create_tl_animation(bg3.SPEAKER_PLAYER, 8.24, 17.79, '0a5b7810-3652-4465-876c-f6947aa618cf', 'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
-                        fade_in = 0.0, fade_out = 0.0, animation_play_start_offset = 8.0)
-    t.create_tl_animation(bg3.SPEAKER_SHADOWHEART, 8.24, 17.79, 'd3cb3816-2562-6bbc-2e32-6e956c325718', 'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
-                        fade_in = 0.0, fade_out = 0.0, animation_play_start_offset = 8.0)
-    t.create_tl_shot('18c5bd4f-c066-4c52-8cdb-d8bbe1d8034e', 10.23, 20.67, is_snapped_to_end = True)
-    t.create_tl_animation(bg3.SPEAKER_PLAYER, 17.79, 20.67, '0a5b7810-3652-4465-876c-f6947aa618cf', 'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
-                        fade_in = 0.0, fade_out = 2.5, animation_play_start_offset = 22.0, is_snapped_to_end = True)
-    t.create_tl_animation(bg3.SPEAKER_SHADOWHEART, 17.79, 20.67, 'd3cb3816-2562-6bbc-2e32-6e956c325718', 'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
-                        fade_in = 0.0, fade_out = 1.44, animation_play_start_offset = 22.0, is_snapped_to_end = True)
+    t.create_tl_animation(
+        bg3.SPEAKER_PLAYER,
+        0.0, 9.77 + 3.88,
+        '0a5b7810-3652-4465-876c-f6947aa618cf',
+        'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
+        fade_in = 0.0,
+        fade_out = 1.53)
+    t.create_tl_animation(
+        bg3.SPEAKER_SHADOWHEART,
+        0.0, 9.77 + 3.88,
+        'd3cb3816-2562-6bbc-2e32-6e956c325718',
+        'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
+        fade_in = 0.0,
+        fade_out = 1.53)
+
+    t.create_tl_shot('befcdee8-6352-4be6-b2ea-23c2ac0dfe60', 0.0, 10.23 + 3.88)
+
+    t.create_tl_animation(
+        bg3.SPEAKER_PLAYER,
+        8.24 + 3.88, 17.79 + 3.88,
+        '0a5b7810-3652-4465-876c-f6947aa618cf',
+        'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
+        fade_in = 0.0,
+        fade_out = 0.0,
+        animation_play_start_offset = 8.0)
+    t.create_tl_animation(
+        bg3.SPEAKER_SHADOWHEART,
+        8.24 + 3.88, 17.79 + 3.88,
+        'd3cb3816-2562-6bbc-2e32-6e956c325718',
+        'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
+        fade_in = 0.0,
+        fade_out = 0.0,
+        animation_play_start_offset = 8.0)
+
+    #t.create_tl_shot('18c5bd4f-c066-4c52-8cdb-d8bbe1d8034e', 10.23 + 3.88, phase_duration, is_snapped_to_end = True)
+    t.create_tl_camera_fov('18c5bd4f-c066-4c52-8cdb-d8bbe1d8034e', 10.23 + 3.88, 17.79 + 3.88, (
+        t.create_value_key(time = 10.23 + 3.88, value = 30.0, value_name = 'FoV', interpolation_type = 3),
+    ))
+    t.create_tl_shot('18c5bd4f-c066-4c52-8cdb-d8bbe1d8034e', 10.23 + 3.88, 17.79 + 3.88)
+    t.create_tl_shot('cb95fcb5-efd7-48f4-9352-5eaeb3e44274', 17.79 + 3.88, phase_duration, is_snapped_to_end = True)
+
+    t.create_tl_animation(
+        bg3.SPEAKER_PLAYER,
+        17.79 + 3.88, phase_duration,
+        '0a5b7810-3652-4465-876c-f6947aa618cf',
+        'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
+        fade_in = 0.0,
+        fade_out = 2.5,
+        animation_play_start_offset = 22.0,
+        is_snapped_to_end = True)
+    t.create_tl_animation(
+        bg3.SPEAKER_SHADOWHEART,
+        17.79 + 3.88, phase_duration,
+        'd3cb3816-2562-6bbc-2e32-6e956c325718',
+        'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
+        fade_in = 0.0,
+        fade_out = 1.44,
+        animation_play_start_offset = 22.0,
+        is_snapped_to_end = True)
 
 
     ###########################################################################
@@ -963,7 +1161,7 @@ def create_hugs_timeline() -> None:
         skip_tl_nodes = ('TLAnimation', 'TLTransform', 'TLShot')
     )
     # Place Shadowheart
-    t.create_tl_transform(bg3.SPEAKER_SHADOWHEART, 0.0, 20.67, (
+    t.create_tl_transform(bg3.SPEAKER_SHADOWHEART, 0.0, phase_duration, (
         (
             #t.create_value_key(time = 0.0, interpolation_type = 5, value = 0.35311571),
             t.create_value_key(time = 0.0, interpolation_type = 5, value = -0.13836698),
@@ -985,7 +1183,7 @@ def create_hugs_timeline() -> None:
         (),
     ), is_snapped_to_end = True)
     # Place Player
-    t.create_tl_transform(bg3.SPEAKER_PLAYER, 0.0, 20.67, (
+    t.create_tl_transform(bg3.SPEAKER_PLAYER, 0.0, phase_duration, (
         (
             #t.create_value_key(time = 0.0, interpolation_type = 5, value = 0.62984967),
             t.create_value_key(time = 0.0, interpolation_type = 5, value = 0.13836698),
@@ -1006,20 +1204,63 @@ def create_hugs_timeline() -> None:
         ),
         (),
     ), is_snapped_to_end = True)
-    t.create_tl_animation(bg3.SPEAKER_PLAYER, 0.0, 9.77, '0a5b7810-3652-4465-876c-f6947aa618cf', 'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
-                        fade_in = 0.0, fade_out = 1.53, animation_play_start_offset = 3.88)
-    t.create_tl_animation(bg3.SPEAKER_SHADOWHEART, 0.0, 9.77, 'd3cb3816-2562-6bbc-2e32-6e956c325718', 'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
-                        fade_in = 0.0, fade_out = 1.53, animation_play_start_offset = 3.88)
-    t.create_tl_shot('befcdee8-6352-4be6-b2ea-23c2ac0dfe60', 0.0, 10.23)
-    t.create_tl_animation(bg3.SPEAKER_PLAYER, 8.24, 17.79, '0a5b7810-3652-4465-876c-f6947aa618cf', 'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
-                        fade_in = 0.0, fade_out = 0.0, animation_play_start_offset = 8.0)
-    t.create_tl_animation(bg3.SPEAKER_SHADOWHEART, 8.24, 17.79, 'd3cb3816-2562-6bbc-2e32-6e956c325718', 'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
-                        fade_in = 0.0, fade_out = 0.0, animation_play_start_offset = 8.0)
-    t.create_tl_shot('18c5bd4f-c066-4c52-8cdb-d8bbe1d8034e', 10.23, 20.67, is_snapped_to_end = True)
-    t.create_tl_animation(bg3.SPEAKER_PLAYER, 17.79, 20.67, '0a5b7810-3652-4465-876c-f6947aa618cf', 'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
-                        fade_in = 0.0, fade_out = 2.5, animation_play_start_offset = 22.0, is_snapped_to_end = True)
-    t.create_tl_animation(bg3.SPEAKER_SHADOWHEART, 17.79, 20.67, 'd3cb3816-2562-6bbc-2e32-6e956c325718', 'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
-                        fade_in = 0.0, fade_out = 1.44, animation_play_start_offset = 22.0, is_snapped_to_end = True)
+    t.create_tl_animation(
+        bg3.SPEAKER_PLAYER,
+        0.0, 9.77 + 3.88,
+        '0a5b7810-3652-4465-876c-f6947aa618cf',
+        'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
+        fade_in = 0.0,
+        fade_out = 1.53)
+    t.create_tl_animation(
+        bg3.SPEAKER_SHADOWHEART,
+        0.0, 9.77 + 3.88,
+        'd3cb3816-2562-6bbc-2e32-6e956c325718',
+        'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
+        fade_in = 0.0,
+        fade_out = 1.53)
+    t.create_tl_shot('befcdee8-6352-4be6-b2ea-23c2ac0dfe60', 0.0, 10.23 + 3.88)
+    t.create_tl_animation(
+        bg3.SPEAKER_PLAYER,
+        8.24 + 3.88, 17.79 + 3.88,
+        '0a5b7810-3652-4465-876c-f6947aa618cf',
+        'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
+        fade_in = 0.0,
+        fade_out = 0.0,
+        animation_play_start_offset = 8.0)
+    t.create_tl_animation(
+        bg3.SPEAKER_SHADOWHEART,
+        8.24 + 3.88, 17.79 + 3.88,
+        'd3cb3816-2562-6bbc-2e32-6e956c325718',
+        'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
+        fade_in = 0.0,
+        fade_out = 0.0,
+        animation_play_start_offset = 8.0)
+
+    #t.create_tl_shot('18c5bd4f-c066-4c52-8cdb-d8bbe1d8034e', 10.23 + 3.88, phase_duration, is_snapped_to_end = True)
+    t.create_tl_camera_fov('18c5bd4f-c066-4c52-8cdb-d8bbe1d8034e', 10.23 + 3.88, 17.79 + 3.88, (
+        t.create_value_key(time = 10.23 + 3.88, value = 30.0, value_name = 'FoV', interpolation_type = 3),
+    ))
+    t.create_tl_shot('18c5bd4f-c066-4c52-8cdb-d8bbe1d8034e', 10.23 + 3.88, 17.79 + 3.88)
+    t.create_tl_shot('cb95fcb5-efd7-48f4-9352-5eaeb3e44274', 17.79 + 3.88, phase_duration, is_snapped_to_end = True)
+
+    t.create_tl_animation(
+        bg3.SPEAKER_PLAYER,
+        17.79 + 3.88, phase_duration,
+        '0a5b7810-3652-4465-876c-f6947aa618cf',
+        'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
+        fade_in = 0.0,
+        fade_out = 2.5,
+        animation_play_start_offset = 22.0,
+        is_snapped_to_end = True)
+    t.create_tl_animation(
+        bg3.SPEAKER_SHADOWHEART,
+        17.79 + 3.88, phase_duration,
+        'd3cb3816-2562-6bbc-2e32-6e956c325718',
+        'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
+        fade_in = 0.0,
+        fade_out = 1.44,
+        animation_play_start_offset = 22.0,
+        is_snapped_to_end = True)
 
 
     ###########################################################################
@@ -1031,7 +1272,7 @@ def create_hugs_timeline() -> None:
         skip_tl_nodes = ('TLAnimation', 'TLTransform', 'TLShot')
     )
     # Place Shadowheart
-    t.create_tl_transform(bg3.SPEAKER_SHADOWHEART, 0.0, 20.67, (
+    t.create_tl_transform(bg3.SPEAKER_SHADOWHEART, 0.0, phase_duration, (
         (
             #t.create_value_key(time = 0.0, interpolation_type = 5, value = 0.35311571),
             t.create_value_key(time = 0.0, interpolation_type = 5, value = -0.13836698),
@@ -1053,7 +1294,7 @@ def create_hugs_timeline() -> None:
         (),
     ), is_snapped_to_end = True)
     # Place Player
-    t.create_tl_transform(bg3.SPEAKER_PLAYER, 0.0, 20.67, (
+    t.create_tl_transform(bg3.SPEAKER_PLAYER, 0.0, phase_duration, (
         (
             #t.create_value_key(time = 0.0, interpolation_type = 5, value = 0.62984967),
             t.create_value_key(time = 0.0, interpolation_type = 5, value = 0.13836698),
@@ -1076,20 +1317,65 @@ def create_hugs_timeline() -> None:
     ), is_snapped_to_end = True)
 
 
-    t.create_tl_animation(bg3.SPEAKER_PLAYER, 0.0, 9.77, '54f674a3-2ae4-42c0-a0ae-b178239a79cd', 'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
-                        fade_in = 0.0, fade_out = 1.53, animation_play_start_offset = 3.88)
-    t.create_tl_animation(bg3.SPEAKER_SHADOWHEART, 0.0, 9.77, 'e3194510-d4e1-18cc-c8c0-3174c912c168', 'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
-                        fade_in = 0.0, fade_out = 1.53, animation_play_start_offset = 3.88)
-    t.create_tl_shot('befcdee8-6352-4be6-b2ea-23c2ac0dfe60', 0.0, 10.23)
-    t.create_tl_animation(bg3.SPEAKER_PLAYER, 8.24, 17.79, '54f674a3-2ae4-42c0-a0ae-b178239a79cd', 'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
-                        fade_in = 0.0, fade_out = 0.0, animation_play_start_offset = 8.0)
-    t.create_tl_animation(bg3.SPEAKER_SHADOWHEART, 8.24, 17.79, 'e3194510-d4e1-18cc-c8c0-3174c912c168', 'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
-                        fade_in = 0.0, fade_out = 0.0, animation_play_start_offset = 8.0)
-    t.create_tl_shot('18c5bd4f-c066-4c52-8cdb-d8bbe1d8034e', 10.23, 20.67, is_snapped_to_end = True)
-    t.create_tl_animation(bg3.SPEAKER_PLAYER, 17.79, 20.67, '54f674a3-2ae4-42c0-a0ae-b178239a79cd', 'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
-                        fade_in = 0.0, fade_out = 2.5, animation_play_start_offset = 22.0, is_snapped_to_end = True)
-    t.create_tl_animation(bg3.SPEAKER_SHADOWHEART, 17.79, 20.67, 'e3194510-d4e1-18cc-c8c0-3174c912c168', 'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
-                        fade_in = 0.0, fade_out = 1.44, animation_play_start_offset = 22.0, is_snapped_to_end = True)
+    t.create_tl_animation(
+        bg3.SPEAKER_PLAYER,
+        0.0, 9.77 + 3.88,
+        '54f674a3-2ae4-42c0-a0ae-b178239a79cd',
+        'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
+        fade_in = 0.0,
+        fade_out = 1.53)
+    t.create_tl_animation(
+        bg3.SPEAKER_SHADOWHEART,
+        0.0, 9.77 + 3.88,
+        'e3194510-d4e1-18cc-c8c0-3174c912c168',
+        'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
+        fade_in = 0.0,
+        fade_out = 1.53)
+
+    t.create_tl_shot('befcdee8-6352-4be6-b2ea-23c2ac0dfe60', 0.0, 10.23 + 3.88)
+
+    t.create_tl_animation(
+        bg3.SPEAKER_PLAYER,
+        8.24 + 3.88, 17.79 + 3.88,
+        '54f674a3-2ae4-42c0-a0ae-b178239a79cd',
+        'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
+        fade_in = 0.0,
+        fade_out = 0.0,
+        animation_play_start_offset = 8.0)
+    t.create_tl_animation(
+        bg3.SPEAKER_SHADOWHEART,
+        8.24 + 3.88, 17.79 + 3.88,
+        'e3194510-d4e1-18cc-c8c0-3174c912c168',
+        'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
+        fade_in = 0.0,
+        fade_out = 0.0,
+        animation_play_start_offset = 8.0)
+
+    #t.create_tl_shot('18c5bd4f-c066-4c52-8cdb-d8bbe1d8034e', 10.23 + 3.88, phase_duration, is_snapped_to_end = True)
+    t.create_tl_shot('18c5bd4f-c066-4c52-8cdb-d8bbe1d8034e', 10.23 + 3.88, 17.79 + 3.88)
+    t.create_tl_camera_fov('18c5bd4f-c066-4c52-8cdb-d8bbe1d8034e', 10.23 + 3.88, 17.79 + 3.88, (
+        t.create_value_key(time = 10.23 + 3.88, value = 30.0, value_name = 'FoV', interpolation_type = 3),
+    ))
+    t.create_tl_shot('cb95fcb5-efd7-48f4-9352-5eaeb3e44274', 17.79 + 3.88, phase_duration, is_snapped_to_end = True)
+
+    t.create_tl_animation(
+        bg3.SPEAKER_PLAYER,
+        17.79 + 3.88, phase_duration,
+        '54f674a3-2ae4-42c0-a0ae-b178239a79cd',
+        'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
+        fade_in = 0.0,
+        fade_out = 2.5,
+        animation_play_start_offset = 22.0,
+        is_snapped_to_end = True)
+    t.create_tl_animation(
+        bg3.SPEAKER_SHADOWHEART,
+        17.79 + 3.88, phase_duration,
+        'e3194510-d4e1-18cc-c8c0-3174c912c168',
+        'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
+        fade_in = 0.0,
+        fade_out = 1.44,
+        animation_play_start_offset = 22.0,
+        is_snapped_to_end = True)
 
 
     ###########################################################################
@@ -1101,7 +1387,7 @@ def create_hugs_timeline() -> None:
         skip_tl_nodes = ('TLAnimation', 'TLTransform', 'TLShot')
     )
     # Place Shadowheart
-    t.create_tl_transform(bg3.SPEAKER_SHADOWHEART, 0.0, 20.67, (
+    t.create_tl_transform(bg3.SPEAKER_SHADOWHEART, 0.0, phase_duration, (
         (
             #t.create_value_key(time = 0.0, interpolation_type = 5, value = 0.35311571),
             t.create_value_key(time = 0.0, interpolation_type = 5, value = -0.13836698),
@@ -1123,7 +1409,7 @@ def create_hugs_timeline() -> None:
         (),
     ), is_snapped_to_end = True)
     # Place Player
-    t.create_tl_transform(bg3.SPEAKER_PLAYER, 0.0, 20.67, (
+    t.create_tl_transform(bg3.SPEAKER_PLAYER, 0.0, phase_duration, (
         (
             #t.create_value_key(time = 0.0, interpolation_type = 5, value = 0.62984967),
             t.create_value_key(time = 0.0, interpolation_type = 5, value = 0.13836698),
@@ -1146,20 +1432,65 @@ def create_hugs_timeline() -> None:
     ), is_snapped_to_end = True)
 
 
-    t.create_tl_animation(bg3.SPEAKER_PLAYER, 0.0, 9.77, '54f674a3-2ae4-42c0-a0ae-b178239a79cd', 'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
-                        fade_in = 0.0, fade_out = 1.53, animation_play_start_offset = 3.88)
-    t.create_tl_animation(bg3.SPEAKER_SHADOWHEART, 0.0, 9.77, 'e3194510-d4e1-18cc-c8c0-3174c912c168', 'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
-                        fade_in = 0.0, fade_out = 1.53, animation_play_start_offset = 3.88)
-    t.create_tl_shot('befcdee8-6352-4be6-b2ea-23c2ac0dfe60', 0.0, 10.23)
-    t.create_tl_animation(bg3.SPEAKER_PLAYER, 8.24, 17.79, '54f674a3-2ae4-42c0-a0ae-b178239a79cd', 'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
-                        fade_in = 0.0, fade_out = 0.0, animation_play_start_offset = 8.0)
-    t.create_tl_animation(bg3.SPEAKER_SHADOWHEART, 8.24, 17.79, 'e3194510-d4e1-18cc-c8c0-3174c912c168', 'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
-                        fade_in = 0.0, fade_out = 0.0, animation_play_start_offset = 8.0)
-    t.create_tl_shot('18c5bd4f-c066-4c52-8cdb-d8bbe1d8034e', 10.23, 20.67, is_snapped_to_end = True)
-    t.create_tl_animation(bg3.SPEAKER_PLAYER, 17.79, 20.67, '54f674a3-2ae4-42c0-a0ae-b178239a79cd', 'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
-                        fade_in = 0.0, fade_out = 2.5, animation_play_start_offset = 22.0, is_snapped_to_end = True)
-    t.create_tl_animation(bg3.SPEAKER_SHADOWHEART, 17.79, 20.67, 'e3194510-d4e1-18cc-c8c0-3174c912c168', 'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
-                        fade_in = 0.0, fade_out = 1.44, animation_play_start_offset = 22.0, is_snapped_to_end = True)
+    t.create_tl_animation(
+        bg3.SPEAKER_PLAYER,
+        0.0, 9.77 + 3.88,
+        '54f674a3-2ae4-42c0-a0ae-b178239a79cd',
+        'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
+        fade_in = 0.0,
+        fade_out = 1.53)
+    t.create_tl_animation(
+        bg3.SPEAKER_SHADOWHEART,
+        0.0, 9.77,
+        'e3194510-d4e1-18cc-c8c0-3174c912c168',
+        'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
+        fade_in = 0.0,
+        fade_out = 1.53)
+
+    t.create_tl_shot('befcdee8-6352-4be6-b2ea-23c2ac0dfe60', 0.0, 10.23 + 3.88)
+
+    t.create_tl_animation(
+        bg3.SPEAKER_PLAYER,
+        8.24 + 3.88, 17.79 + 3.88,
+        '54f674a3-2ae4-42c0-a0ae-b178239a79cd',
+        'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
+        fade_in = 0.0,
+        fade_out = 0.0,
+        animation_play_start_offset = 8.0)
+    t.create_tl_animation(
+        bg3.SPEAKER_SHADOWHEART,
+        8.24 + 3.88, 17.79 + 3.88,
+        'e3194510-d4e1-18cc-c8c0-3174c912c168',
+        'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
+        fade_in = 0.0,
+        fade_out = 0.0,
+        animation_play_start_offset = 8.0)
+
+    #t.create_tl_shot('18c5bd4f-c066-4c52-8cdb-d8bbe1d8034e', 10.23 + 3.88, phase_duration, is_snapped_to_end = True)
+    t.create_tl_camera_fov('18c5bd4f-c066-4c52-8cdb-d8bbe1d8034e', 10.23 + 3.88, 17.79 + 3.88, (
+        t.create_value_key(time = 10.23 + 3.88, value = 30.0, value_name = 'FoV', interpolation_type = 3),
+    ))
+    t.create_tl_shot('18c5bd4f-c066-4c52-8cdb-d8bbe1d8034e', 10.23 + 3.88, 17.79 + 3.88)
+    t.create_tl_shot('cb95fcb5-efd7-48f4-9352-5eaeb3e44274', 17.79 + 3.88, phase_duration, is_snapped_to_end = True)
+
+    t.create_tl_animation(
+        bg3.SPEAKER_PLAYER,
+        17.79 + 3.88, phase_duration,
+        '54f674a3-2ae4-42c0-a0ae-b178239a79cd',
+        'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
+        fade_in = 0.0,
+        fade_out = 2.5,
+        animation_play_start_offset = 22.0,
+        is_snapped_to_end = True)
+    t.create_tl_animation(
+        bg3.SPEAKER_SHADOWHEART,
+        17.79 + 3.88, phase_duration,
+        'e3194510-d4e1-18cc-c8c0-3174c912c168',
+        'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
+        fade_in = 0.0,
+        fade_out = 1.44,
+        animation_play_start_offset = 22.0,
+        is_snapped_to_end = True)
 
 
     ###########################################################################
@@ -1170,19 +1501,60 @@ def create_hugs_timeline() -> None:
         hug_dragonborn_node_uuid,
         skip_tl_nodes = ('TLAnimation', 'TLShot')
     )
-    t.create_tl_shot('befcdee8-6352-4be6-b2ea-23c2ac0dfe60', 0.0, 20.67, is_snapped_to_end = True)
-    t.create_tl_animation(bg3.SPEAKER_PLAYER, 0.0, 9.18, '84117bdc-71dd-47a2-9cba-039df0b1890d', 'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
-                        fade_in = 0.0, fade_out = 0.94, animation_play_start_offset = 3.88)
-    t.create_tl_animation(bg3.SPEAKER_SHADOWHEART, 0.0, 9.18, '57523fff-f67e-c3d5-59a4-b45a84d3eaec', 'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
-                        fade_in = 0.0, fade_out = 0.94, animation_play_start_offset = 3.88)
-    t.create_tl_animation(bg3.SPEAKER_PLAYER, 8.24, 17.79, '84117bdc-71dd-47a2-9cba-039df0b1890d', 'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
-                        fade_in = 0.0, fade_out = 0.0, animation_play_start_offset = 6.29)
-    t.create_tl_animation(bg3.SPEAKER_SHADOWHEART, 8.24, 17.79, '57523fff-f67e-c3d5-59a4-b45a84d3eaec', 'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
-                        fade_in = 0.0, fade_out = 0.0, animation_play_start_offset = 6.29)
-    t.create_tl_animation(bg3.SPEAKER_PLAYER, 17.79, 20.67, '84117bdc-71dd-47a2-9cba-039df0b1890d', 'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
-                        fade_in = 0.0, fade_out = 2.0, animation_play_start_offset = 16.79, is_snapped_to_end = True)
-    t.create_tl_animation(bg3.SPEAKER_SHADOWHEART, 17.79, 20.67, '57523fff-f67e-c3d5-59a4-b45a84d3eaec', 'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
-                        fade_in = 0.0, fade_out = 1.44, animation_play_start_offset = 16.79, is_snapped_to_end = True)
+
+    t.create_tl_shot('befcdee8-6352-4be6-b2ea-23c2ac0dfe60', 0.0, 17.79 + 3.88)
+
+    t.create_tl_animation(
+        bg3.SPEAKER_PLAYER,
+        0.0, 9.18 + 3.88,
+        '84117bdc-71dd-47a2-9cba-039df0b1890d',
+        'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
+        fade_in = 0.0,
+        fade_out = 0.94)
+    t.create_tl_animation(
+        bg3.SPEAKER_SHADOWHEART,
+        0.0, 9.18 + 3.88,
+        '57523fff-f67e-c3d5-59a4-b45a84d3eaec',
+        'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
+        fade_in = 0.0,
+        fade_out = 0.94)
+    t.create_tl_animation(
+        bg3.SPEAKER_PLAYER,
+        8.24 + 3.88, 17.79 + 3.88,
+        '84117bdc-71dd-47a2-9cba-039df0b1890d',
+        'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
+        fade_in = 0.0,
+        fade_out = 0.0,
+        animation_play_start_offset = 6.29)
+    t.create_tl_animation(
+        bg3.SPEAKER_SHADOWHEART,
+        8.24 + 3.88, 17.79 + 3.88,
+        '57523fff-f67e-c3d5-59a4-b45a84d3eaec',
+        'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
+        fade_in = 0.0,
+        fade_out = 0.0,
+        animation_play_start_offset = 6.29)
+
+    t.create_tl_shot('cb95fcb5-efd7-48f4-9352-5eaeb3e44274', 17.79 + 3.88, phase_duration, is_snapped_to_end = True)
+
+    t.create_tl_animation(
+        bg3.SPEAKER_PLAYER,
+        17.79 + 3.88, phase_duration,
+        '84117bdc-71dd-47a2-9cba-039df0b1890d',
+        'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
+        fade_in = 0.0,
+        fade_out = 2.0,
+        animation_play_start_offset = 16.79,
+        is_snapped_to_end = True)
+    t.create_tl_animation(
+        bg3.SPEAKER_SHADOWHEART,
+        17.79 + 3.88, phase_duration,
+        '57523fff-f67e-c3d5-59a4-b45a84d3eaec',
+        'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
+        fade_in = 0.0,
+        fade_out = 1.44,
+        animation_play_start_offset = 16.79,
+        is_snapped_to_end = True)
 
 
     ###########################################################################
@@ -1193,19 +1565,60 @@ def create_hugs_timeline() -> None:
         hug_sad_dragonborn_node_uuid,
         skip_tl_nodes = ('TLAnimation', 'TLShot')
     )
-    t.create_tl_shot('befcdee8-6352-4be6-b2ea-23c2ac0dfe60', 0.0, 20.67, is_snapped_to_end = True)
-    t.create_tl_animation(bg3.SPEAKER_PLAYER, 0.0, 9.18, '84117bdc-71dd-47a2-9cba-039df0b1890d', 'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
-                        fade_in = 0.0, fade_out = 0.94, animation_play_start_offset = 3.88)
-    t.create_tl_animation(bg3.SPEAKER_SHADOWHEART, 0.0, 9.18, '57523fff-f67e-c3d5-59a4-b45a84d3eaec', 'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
-                        fade_in = 0.0, fade_out = 0.94, animation_play_start_offset = 3.88)
-    t.create_tl_animation(bg3.SPEAKER_PLAYER, 8.24, 17.79, '84117bdc-71dd-47a2-9cba-039df0b1890d', 'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
-                        fade_in = 0.0, fade_out = 0.0, animation_play_start_offset = 6.29)
-    t.create_tl_animation(bg3.SPEAKER_SHADOWHEART, 8.24, 17.79, '57523fff-f67e-c3d5-59a4-b45a84d3eaec', 'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
-                        fade_in = 0.0, fade_out = 0.0, animation_play_start_offset = 6.29)
-    t.create_tl_animation(bg3.SPEAKER_PLAYER, 17.79, 20.67, '84117bdc-71dd-47a2-9cba-039df0b1890d', 'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
-                        fade_in = 0.0, fade_out = 2.0, animation_play_start_offset = 16.79, is_snapped_to_end = True)
-    t.create_tl_animation(bg3.SPEAKER_SHADOWHEART, 17.79, 20.67, '57523fff-f67e-c3d5-59a4-b45a84d3eaec', 'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
-                        fade_in = 0.0, fade_out = 1.44, animation_play_start_offset = 16.79, is_snapped_to_end = True)
+
+    t.create_tl_shot('befcdee8-6352-4be6-b2ea-23c2ac0dfe60', 0.0, 17.79 + 3.88)
+
+    t.create_tl_animation(
+        bg3.SPEAKER_PLAYER,
+        0.0, 9.18 + 3.88,
+        '84117bdc-71dd-47a2-9cba-039df0b1890d',
+        'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
+        fade_in = 0.0,
+        fade_out = 0.94)
+    t.create_tl_animation(
+        bg3.SPEAKER_SHADOWHEART,
+        0.0, 9.18 + 3.88,
+        '57523fff-f67e-c3d5-59a4-b45a84d3eaec',
+        'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
+        fade_in = 0.0,
+        fade_out = 0.94)
+    t.create_tl_animation(
+        bg3.SPEAKER_PLAYER,
+        8.24 + 3.88, 17.79 + 3.88,
+        '84117bdc-71dd-47a2-9cba-039df0b1890d',
+        'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
+        fade_in = 0.0,
+        fade_out = 0.0,
+        animation_play_start_offset = 6.29)
+    t.create_tl_animation(
+        bg3.SPEAKER_SHADOWHEART,
+        8.24 + 3.88, 17.79 + 3.88,
+        '57523fff-f67e-c3d5-59a4-b45a84d3eaec',
+        'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
+        fade_in = 0.0,
+        fade_out = 0.0,
+        animation_play_start_offset = 6.29)
+
+    t.create_tl_shot('cb95fcb5-efd7-48f4-9352-5eaeb3e44274', 17.79 + 3.88, phase_duration, is_snapped_to_end = True)
+
+    t.create_tl_animation(
+        bg3.SPEAKER_PLAYER,
+        17.79 + 3.88, phase_duration,
+        '84117bdc-71dd-47a2-9cba-039df0b1890d',
+        'a2dae3f2-e3c9-4fc7-b8ac-82abf4a153b0',
+        fade_in = 0.0,
+        fade_out = 2.0,
+        animation_play_start_offset = 16.79,
+        is_snapped_to_end = True)
+    t.create_tl_animation(
+        bg3.SPEAKER_SHADOWHEART,
+        17.79 + 3.88, phase_duration,
+        '57523fff-f67e-c3d5-59a4-b45a84d3eaec',
+        'c8dad77b-5b76-44fe-bfeb-61d676ede3f6',
+        fade_in = 0.0,
+        fade_out = 1.44,
+        animation_play_start_offset = 16.79,
+        is_snapped_to_end = True)
 
 
     ###########################################################################

@@ -1,27 +1,4 @@
-# Origins and Companions: UUIDs
-UUID_Shadowheart = '2bb39cf2-4649-4238-8d0c-44f62b5a3dfd'
-
-
-# Origins and Companions: speaker uuids; these are global templates UUIDs and used in dialogs to refer to speakers
-SPEAKER_MINSC       = '0de603c5-42e2-4811-9dad-f652de080eba'
-SPEAKER_MINTHARA    = '25721313-0c15-4935-8176-9f134385451b'
-SPEAKER_KARLACH     = '2c76687d-93a2-477b-8b18-8a14b549304c'
-SPEAKER_SHADOWHEART = '3ed74f06-3c60-42dc-83f6-f034cb47c679'
-SPEAKER_LAEZEL      = '58a69333-40bf-8358-1d17-fff240d7fb12'
-SPEAKER_HALSIN      = '7628bc0e-52b8-42a7-856a-13a6fd413323'
-SPEAKER_JAHEIRA     = '91b6b200-7d00-4d62-8dc9-99e8339dfa1a'
-SPEAKER_GALE        = 'ad9af97d-75da-406a-ae13-7071c563f604'
-SPEAKER_WYLL        = 'c774d764-4a17-48dc-b470-32ace9ce447d'
-SPEAKER_ASTARION    = 'c7c13742-bacd-460a-8f65-f864fe41f255'
-SPEAKER_DURGE       = 'e6b3c2c4-e88d-e9e6-ffa1-d49cdfadd411'
-SPEAKER_BOO         = 'd49e3b49-a089-4465-b453-28dc79e82bb3'
-SPEAKER_MIZORA      = '491a7686-3081-405b-983c-289ec8781e0a'
-SPEAKER_VICONIA     = 'b1ea974d-96fb-47ca-b6d9-9c85fcb69313'
-SPEAKER_ARNELL      = 'c12d561f-beae-4ef6-917e-0bec2f829449'
-SPEAKER_NYM_ORLYTH  = '7574fc5a-3645-4370-a778-0b38d0ef162a'
-SPEAKER_SORN_ORLYTH = 'f25b5f9a-bfde-4d81-a3fb-74fc39dad95b'
-SPEAKER_GANDREL     = '0e47fcb9-c0c4-4b0c-902b-2d13d209e760'
-SPEAKER_JERGAL      = '0133f2ad-e121-4590-b5f0-a79413919805'
+from ._speakers import *
 
 # Origins and Companions: UUIDs, these are used in reactions
 ORIGIN_SHADOWHEART = '2bb39cf2-4649-4238-8d0c-44f62b5a3dfd'
@@ -92,9 +69,11 @@ FLAG_ORI_Inclusion_Random = '5c169560-2732-c515-9e73-06ba1fd768f0' # Object flag
 FLAG_ORI_Inclusion_PickedAtRandom = '46a601fb-8cb7-46ed-9856-3d4e38c53a02' # Object flag. Companion was picked at random after setting FLAG_ORI_Inclusion_Random.
 FLAG_ORI_Shadowheart_Knows_WolfFear = 'f5f935c3-7f73-4de4-9aee-553cb96fb6d1' # Knows about Shadowheart's wolf fear
 FLAG_ShadowHeart_InParty_Knows_SharWorshipper = '634f858d-9b54-0711-e31f-075d304422ab' # Global flag, Tav knows about Shar worship
+FLAG_ORI_Shadowheart_Knows_IncurableWound = 'bf04e5f1-0add-4b21-a3ec-be25a73bfe92' # Global flag, Tav has seen Shadowheart's incurable wound
 FLAG_ORI_Shadowheart_Romance1_AfterCelebration_State_QueueInvitation = '2d7e1f5e-fee1-4732-a0a2-f1337cc5466c' # Invitation to the waterfall romance cutscene
 
 # Shadowheart states
+FLAG_ORI_Shadowheart_State_BlockBackground = 'f3323dfc-c725-4627-a64f-fb8c6e8e4a74' # Global flag. Set when Shadowheart hit a particular milestone on revealing her background.
 FLAG_ORI_Shadowheart_State_IrregularBehaviour = 'a1e4a324-4c58-48fb-b08e-d538fec45af8' # Global flag. Shadowheart is behaving oddly in camp.
 FLAG_ORI_Shadowheart_State_EnemyOfSharPath = '055bbe0f-05f5-444b-a7e2-0f66edd2178c' # Global flag. Shadowheart rejected Shar
 FLAG_ORI_Shadowheart_State_SharPath = 'bf9ae334-ff6a-458d-b898-3074bca0bdfb' # Global flag. Shadowheart remained loyal to Shar
@@ -107,12 +86,21 @@ FLAG_ORI_State_PartneredWithShadowheart = '3808ae35-ad4e-465b-800b-63d32b77211e'
 FLAG_ORI_State_WasPartneredWithShadowheart = '542e6cf4-bfd1-471d-b4b5-693d630376cb' # Player was in a relationship with Shadowheart.
 FLAG_ORI_Shadowheart_State_WasHugged = 'a9e3314f-8255-48dc-a764-37ea96d86924' # Global flag. Shadowheart was hugged by someone
 FLAG_ORI_State_HandledBreakupWithShadowheart = 'd400a4f6-4a10-48a4-a425-73786e473815' # Shadowheart reacted to the player breaking up with her.
-FLAG_ORI_Shadowheart_State_Act3RomanceEnded = '4f67ad76-c654-490e-ab62-263ae8fa8d14' # 
-FLAG_ORI_Shadowheart_State_RejectShar_KilledParents = 'e9060caf-66b0-4701-8dfd-5ae1125f5afd' # Killed parents while on the reject shar path
-FLAG_ORI_Shadowheart_State_RejectShar_SavedParents = '486d69d4-a7c2-4cb5-8fcb-8f2cb738ada9' # Saved parents while on the reject shar path
-FLAG_ORI_Shadowheart_State_Shar_SavedParents = '8a0fad17-1615-4a0d-a045-21661d9a2aa0' # Saved parents while on shar path
-FLAG_ORI_Shadowheart_State_Shar_KilledParents = '3a3b0ecf-a1ed-4733-8548-0348befc6bac' # Killed parents while on Shar Path
+FLAG_ORI_Shadowheart_State_AbortedSkinnydipping = '26e83a93-8999-4488-83ee-a93d1ccd5cac' # Global flag. Aborted skinny dipping
+FLAG_ORI_Shadowheart_State_ParentPoints_TeacherGrave = '600ca39c-5887-4657-bf4c-d417cc3d146b' # Global flag.
+FLAG_ORI_Shadowheart_State_ParentPoints_Hideout = 'a1cf2f2f-8f3f-4ac7-a1f7-32e3bdb1bda4' # Global flag.
+FLAG_ORI_Shadowheart_State_ParentPoints_Graffiti = '56084254-ec74-4c13-8eb2-6e8163f16b8f' # Global flag.
+FLAG_ORI_Shadowheart_State_HadParentsPoints = 'c5c03e5f-44af-4347-a081-bbbd9d5fc632' # Object flag.
+FLAG_ORI_Shadowheart_State_ParentPoints_HasEnoughPoints = '1bbdd0b8-c2de-4b2f-8ce8-6740812deb59' # Global flag.
+FLAG_ORI_Shadowheart_State_Act3RomanceEnded = '4f67ad76-c654-490e-ab62-263ae8fa8d14' # Global flag.
+FLAG_ORI_Shadowheart_State_RejectShar_KilledParents = 'e9060caf-66b0-4701-8dfd-5ae1125f5afd' # Global flag. Killed parents while on the reject shar path
+FLAG_ORI_Shadowheart_State_RejectShar_SavedParents = '486d69d4-a7c2-4cb5-8fcb-8f2cb738ada9' # Global flag. Saved parents while on the reject shar path
+FLAG_ORI_Shadowheart_State_Shar_SavedParents = '8a0fad17-1615-4a0d-a045-21661d9a2aa0' # Global flag. Saved parents while on shar path
+FLAG_ORI_Shadowheart_State_Shar_KilledParents = '3a3b0ecf-a1ed-4733-8548-0348befc6bac' # Global flag. Killed parents while on Shar Path
 FLAG_ORI_Shadowheart_State_RetiredToFarmWithAvatar = '25930d25-598a-8692-5a96-039c9b2c0512' # Tav and Shadowheart retired to live in a farmhouse
+
+FLAG_Shadowheart_InParty_Event_KissHappened = '0434578b-646b-e0a7-3124-bc3338144658' # Dialog flag. Tav kissed Shadowheart.
+
 
 FLAG_GEN_SoloPlayer = '29e32f83-2001-0dbc-7df9-3ca2b3bc4349'
 
@@ -133,6 +121,13 @@ FLAG_GLO_Wyll_State_BladeOfAvernus = 'faeb73da-a609-dc56-7745-ac07f795c137' # Wy
 # Minthara states
 FLAG_ORI_Minthara_State_AskedAboutAllCurrentTeamMembers = '6efc8f72-ace6-8414-bb77-862f9dd4d6a5' # Object flag. Asked Minthara about all current Team Members
 
+# Durge states
+FLAG_ORI_DarkUrge_State_BhaalResisted = '74944ac3-1ea0-4eae-9653-1f1319f8646b' # Post-Orin fight, Dark Urge players rejected Bhaal's command to be his chosen.
+FLAG_ORI_DarkUrge_State_GivenSlayerForm = '14aec5bc-1013-4845-96ca-20722c5219e3' # Flag used to identify that players have been given the slayer form, and therefore Orin does not have the form." />
+
+FLAG_CAMP_Halsin_CRD_Romance_CheckWithExistingPartner = 'b523a2ba-8abf-4116-a5c1-636c77920ca3' # Object flag. Set on Tav when you need to ask your other partner about polyamory with Halsin
+FLAG_ORI_State_PartneredWithHalsinSecondary = '6af0be74-d032-4a20-876a-11bab5f86db2' # Object flag. Set on Tav if they are in 3-way relationship including the druid.
+
 FLAG_OriginRemoveFromPartyAfterDialog = '7a429beb-fbfb-fa8a-3a33-0349323ad11d' # Set on a companion. They return to camp after the dialog.
 
 FLAG_ORI_Shadowheart_Event_PostNightfall_DiscussionAvailable = '1eefa664-d8c5-6f9e-e662-66625481a89b' # Global flag. Sets when the follow-up to SH nightfall SD ROM is available
@@ -149,13 +144,15 @@ FLAG_LOW_SharGrotto_Event_SurrenderShadowheart = 'bfc7f3b7-4e58-44e1-bb58-131ee7
 FLAG_ORI_State_Recruited = 'e78c0aab-fb48-98e9-3ed9-773a0c39988d' # Set on recruited companions
 FLAG_GLO_Minthara_InParty_HasTopicalGreeting = '8069e1a8-51b5-afc0-de8c-f5af844f034d' # Object flag. Minthara has a topical greeting in place of normal greeting
 
+FLAG_DEN_PartyProgress_EnteredGrove = '18cfaaeb-c0df-46ac-962d-0c300f816d73' # Global flag. At least one player entered the grove
+FLAG_SHA_PartyProgress_EnteredSharTemple = 'd212e499-d006-4043-9dee-8aac504098e5' # Global flag. The party has entered the shar temple at least once
+FLAG_COL_PartyProgress_EnteredColony = '666abe92-f197-4c38-85a8-d879a9e258b6' # Global flag. The party has entered the Colony
 FLAG_VISITEDREGION_SCL_Main_A_ACT_2 = 'f6e72539-9bc6-42e1-a20f-390f3a17ad8d' # Global flag. Player visited shadow cursed lands.
 FLAG_VISITEDREGION_INT_Main_A_ACT_3 = 'a2e1a618-d211-484e-9389-6b37308b8da1' # Global flag. The party had camped in a region between acts 2 and 3.
-FLAG_COL_PartyProgress_EnteredColony = '666abe92-f197-4c38-85a8-d879a9e258b6' # Global flag. Players entered the Colony
+FLAG_VISITEDREGION_BGO_Main_A = '40f06537-814f-4796-b012-5ffaa648a8d9' # Global flag. Been in BGO_Main_A
 
 FLAG_LOW_BhaalTemple_State_KilledVictim = 'ba91f332-45d5-483c-b460-dfec2e6d87e9' # Global flag. Flag set in dialog when Orin stabs the victim.
 
-DEN_PartyProgress_EnteredGrove = '18cfaaeb-c0df-46ac-962d-0c300f816d73' # Global flag. At least one player entered the grove
 GOB_State_LeadersAreDead = 'a1c5b01f-4b7f-47ab-82b0-d24d9c6d8bc6' # Global flag. Goblin leaders are dead
 DEN_GoblinHunt_Event_LeaderMetPlayer = '097d69b7-7e59-49ba-830a-b2b7f950aec7' # Global flag. Flag set once the designated leader of the tieflings has met a player at the entrance of the Grove.
 DEN_AttackOnDen_State_DenVictory = '71c7f23e-3ff1-c9b8-3ef5-d75fa1b42c8d' # Global flag. The tieflings won Attack on Den or Goblin Hunt was completed
@@ -166,6 +163,8 @@ FLAG_ORI_Shadowheart_SeenWithBox = '31d00a1b-9f7b-7385-4d94-e6f98883742c' # Glob
 FLAG_GOB_Orpheus_State_HadVoiceOfAbsoluteEvent = '9546407d-19e3-4f26-88af-5970896997d7' # Global flag. The player took part in Voice of Absolute dialog and saw Orpheus box protecting from the Voice.
 FLAG_Act2_PointOfNoReturnReached = 'a3155f30-b8f3-4db5-ac21-d3036f4426e3' # Global flag. We entered the Shadowfell and the act 2 point of no return has been reached.
 
+# Set to true when Tav reads Halsin's notebook describing his role in Isobel's death
+DEN_DruidLair_Knows_SharDagger = '72d2bbf3-afab-0f8a-2654-73f04a213e2c'
 
 FLAG_Companion_Leaves_Party = "363c71f4-8b46-c0c0-4bbb-0e5a85e4652d" # If set on a companion, they leave the party
 
@@ -204,6 +203,15 @@ FLAG_ORI_Shadowheart_State_PostSkinnydipping_Discussed = 'f0a86777-beff-43ed-92e
 # Camp state flags
 FLAG_GLO_CAMP_State_NightMode = 'fb53edc2-9a89-4ad2-af83-20b5fe425cdd'
 FLAG_CAMP_GLO_State_InCamp = '161b7223-039d-4ebe-986f-1dcd9a66733f' # Set on a character when they are in camp
+FLAG_GLO_Camp_Event_SkipSleepCutscene = '1ee0a25e-4115-44ef-b87d-c2a5eee494b6' # Global flag, set this during a night dialogue to skip the succeeding sleepcutscene
+
+# Dapper drow related flags
+FLAG_WYR_DapperDrow_Event_IntimacyDone = '10cfd95c-876e-cce9-9138-5593b5b5a33e' # Global flag. Intimate scene with Drow is complete.
+FLAG_WYR_DapperDrow_State_HiredBrother = 'e0d6ad5e-c5d4-9d8c-8c6f-997694d6f7b8' # Set on a character. The player hired dapper drow brother.
+FLAG_WYR_DapperDrow_State_HiredSister = '390a05d9-0313-095d-1356-1884bdf6273e'  # Set on a character. The player hired dapper drow sister.
+FLAG_WYR_DapperDrow_State_HiredBoth = '4dc060ee-1076-ba53-8663-e436665b4800'    # The player hired both drows.
+
+
 
 FLAG_GLO_SafeRomance_Enabled = 'f46a2601-92d1-4b86-98b5-0dae4a290ff6' # Is the safe romance option enabled?
 
@@ -235,17 +243,22 @@ TAG_FEMALE = '3806477c-65a7-4100-9f92-be4c12c4fa4f'
 TAG_FULL_CEREMORPH = '3797bfc4-8004-4a19-9578-61ce0714cc0b' # Player has become a full Mind Flayer
 TAG_HUMANOID_MONSTER = '7fbed0d4-cabc-4a9d-804e-12ca6088a0a8'
 TAG_AVATAR = '306b9b05-1057-4770-aa17-01af21acd650'
+TAG_HALFORC = '3311a9a9-cdbc-4b05-9bf6-e02ba1fc72a3'
 
 # Gods
 GOD_Selune = '4533d292-5b1f-43c7-ad44-6bc7db1000ca'
 GOD_Shar = '486e4a27-e6f9-40a5-9dd1-108a1d0f60eb'
 
+# Classes
+TAG_BARD = 'd93434bd-6b71-4789-b128-ee24156057cc'
 
 # Approval flags
 FLAG_Approval_AtLeast_60_For_Sp1  = '4445984d-56f3-0e7c-25d5-cf5cca2a5642'
+FLAG_Approval_AtLeast_80_For_Sp1  = 'c014f892-8450-7821-8936-f862cc67654e'
 
-FLAG_Approval_AtLeast_Neg20_For_Sp2 = '4c39c64b-8373-6f5f-2dac-990196d3c6dc'
+FLAG_Approval_AtLeast_N20_For_Sp2 = '4c39c64b-8373-6f5f-2dac-990196d3c6dc'
 FLAG_Approval_AtLeast_10_For_Sp2  = 'fccac36f-92a5-ad84-9e45-fed71d386452'
+FLAG_Approval_AtLeast_20_For_Sp2 = '91cfff92-fb1e-caf5-9d5c-9c5971b96d04'
 FLAG_Approval_AtLeast_30_For_Sp2  = '98ca7185-0f2d-4420-be81-2b7c5e109e91'
 FLAG_Approval_AtLeast_40_For_Sp2  = 'cb50595f-b514-26a8-0c90-fbb21185b22e'
 FLAG_Approval_AtLeast_60_For_Sp2  = 'bf670cb3-8110-e901-ed45-bb0b0f15b761'

@@ -1,3 +1,9 @@
+.ipynb_checkpoints
+/tmp/**
+/env/**
+/env_ea/**
+/loca/unused/**
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

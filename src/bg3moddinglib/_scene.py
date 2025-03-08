@@ -2,7 +2,15 @@ from __future__ import annotations
 
 import xml.etree.ElementTree as et
 
-from ._common import get_bg3_attribute, get_required_bg3_attribute, new_random_uuid, to_compact_string, put_object_into_map, find_object_by_map_key
+from ._common import (
+    get_bg3_attribute,
+    get_required_bg3_attribute,
+    set_bg3_attribute,
+    new_random_uuid,
+    to_compact_string,
+    put_object_into_map,
+    find_object_by_map_key
+)
 from ._files import game_file
 
 from typing import Iterable
@@ -32,6 +40,46 @@ class scene_object:
     @property
     def lsx_xml(self) -> et.Element:
         return self.__lsx_file.root_node
+
+    def create_new_actor(
+            self,
+            templaye_uuid: str,
+            actor_type: int,
+            look_at_mode: int,
+            position: tuple[float, float, float],
+            rotation: tuple[float, float, float, float],
+            scale: float,
+            /,
+            important_for_staging: bool = True,
+            is_terrain_snapping_in_game_disabled = True
+    ) -> None:
+        default_stage_uuid = '00000000-0000-0000-0000-000000000000'
+        actor_node = et.fromstring("".join([
+            '<node id="TLActor">',
+            f'<attribute id="ActorType" type="uint8" value="{actor_type}" />',
+            f'<attribute id="LookAtMode" type="uint8" value="{look_at_mode}" />',
+            f'<attribute id="TemplateId" type="guid" value="{templaye_uuid}" />',
+            '<attribute id="ImportantForStaging" type="bool" value="True" />' if important_for_staging else '',
+            '<attribute id="IsTerrainSnappingInGameDisabled" type="bool" value="True" />' if is_terrain_snapping_in_game_disabled else '',
+            '<children><node id="Transforms"><children>',
+            f'<node id="Object"><attribute id="MapKey" type="guid" value="{default_stage_uuid}"/><children></children></node>',
+            '</children></node></children></node>'
+        ]))
+
+        root_node = self.__lsf_file.xml.getroot()
+        actors = root_node.find('./region[@id="TLScene"]/node[@id="TLScene"]/children/node[@id="TLActors"]/children')
+        if actors is None:
+            raise RuntimeError(f'Could not add a new actor to {self.__lsf_file.relative_file_path}')
+        actors.append(actor_node)
+
+        root_node = self.__lsx_file.xml.getroot()
+        actors = root_node.find('./region[@id="TLScene"]/node[@id="root"]/children/node[@id="TLActors"]/children')
+        if actors is None:
+            raise RuntimeError(f'Could not add a new actor to {self.__lsx_file.relative_file_path}')
+        actors.append(actor_node)
+
+        self.set_actor_transform_to_stage(templaye_uuid, position, rotation, scale, stage_uuid = default_stage_uuid)
+
 
     def create_new_stage(self, /, stage_uuid: str | None = None, name: str | None = None) -> str:
         if stage_uuid is None:
@@ -214,9 +262,11 @@ class scene_object:
                 f'<attribute id="Scale" type="float" value="{scale}" />',
                 '</node></children></node>'
         ]))
-        transforms_map = target.find('./children/node[@id="Transform"]')
+        transforms_map = target.find('./children/node[@id="Transforms"]')
         if not isinstance(transforms_map, et.Element):
-            raise ValueError(f'cannot add a new transform to stage {stage_uuid} {to_compact_string(target)}')
+            transforms_map = target.find('./children/node[@id="Transform"]')
+            if not isinstance(transforms_map, et.Element):
+                raise ValueError(f'cannot add a new transform to stage {stage_uuid} {to_compact_string(target)}')
         put_object_into_map(transforms_map, new_transform)
 
     def __put_transform_into_stage_lsx(
@@ -239,7 +289,9 @@ class scene_object:
                 f'<attribute id="Scale" type="float" value="{scale}" />',
                 '</node></children></node>'
         ]))
-        transforms_map = target.find('./children/node[@id="Transform"]')
+        transforms_map = target.find('./children/node[@id="Transforms"]')
         if not isinstance(transforms_map, et.Element):
-            raise ValueError(f'cannot add a new transform to stage {stage_uuid} {to_compact_string(target)}')
+            transforms_map = target.find('./children/node[@id="Transform"]')
+            if not isinstance(transforms_map, et.Element):
+                raise ValueError(f'cannot add a new transform to stage {stage_uuid} {to_compact_string(target)}')
         put_object_into_map(transforms_map, new_transform)

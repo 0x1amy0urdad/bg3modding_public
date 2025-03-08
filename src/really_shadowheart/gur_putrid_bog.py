@@ -93,6 +93,8 @@ def create_conversation_gur_monster_hunter_putrid_bog() -> None:
     # Shadowheart reaction to Tav protecting Astarion from the Gut Hunter
     #################################################################################################
 
+    speaker_idx_tav = d.get_speaker_slot_index(bg3.SPEAKER_PLAYER)
+    speaker_idx_shadowheart = d.get_speaker_slot_index(bg3.SPEAKER_SHADOWHEART)
 
     #entry_template_node_uuid = '5027aa91-9c7b-4e32-8ca9-7b0e511c1496'
     template_node_uuid = 'bbc05a29-e779-486e-86a0-ae796c2893b3'
@@ -137,14 +139,14 @@ def create_conversation_gur_monster_hunter_putrid_bog() -> None:
         skip_tl_nodes = ('TLShot',),
         phase_duration = 4.7,
         emotions = {
-            bg3.SPEAKER_SHADOWHEART: ((0.0, 4, None), (1.89, 4, 1), (3.19, 4, None))
+            bg3.SPEAKER_SHADOWHEART: ((0.0, 4, None), (1.89, 4, 1), (3.19, 4, None)),
         },
         attitudes = {
             bg3.SPEAKER_SHADOWHEART: ((0.0, '88f49c59-3a8c-49d7-b3e8-ed731abaafeb', '375d49d9-707a-42fb-a7f5-7bccba35a6ea', None),),
             bg3.SPEAKER_PLAYER: ((0.0, '7f6ccd67-aa7d-4803-ad7f-629c7783e83f', '375d49d9-707a-42fb-a7f5-7bccba35a6ea', None),),
         })
-    t.create_tl_shot('7b067edd-f53f-49e1-95bc-0986e6e2ca2f', 0.0, 4.5)
-    t.create_tl_shot('e08db860-1e62-4271-bf4e-d51602468573', 4.5, 4.7)
+    t.create_tl_shot('7b067edd-f53f-49e1-95bc-0986e6e2ca2f', 0.0, 4.7)
+    #t.create_tl_shot('e08db860-1e62-4271-bf4e-d51602468573', 4.5, 4.7)
 
     # He's one of us. I wasn't about to just betray him.
     d.create_standard_dialog_node(
@@ -158,7 +160,7 @@ def create_conversation_gur_monster_hunter_putrid_bog() -> None:
     d.create_standard_dialog_node(
         '568c8ed8-939a-443c-8548-f22e7034e709',
         bg3.SPEAKER_SHADOWHEART,
-        ['b5672ea7-9093-e82d-5b87-bee7b48bbdf6'],
+        ['b5672ea7-9093-e82d-5b87-bee7b48bbdf6', '80965aba-cc3d-45d0-bac0-30d6d30034c5', '28f07d7b-f8a5-4eae-9af4-dba6261edc58'],
         bg3.text_content('h56359b73gb29ag4f19gbcd0gcd15a66d30f6', 1),
         constructor=bg3.dialog_object.ANSWER)
     t.create_new_voice_phase_from_another(
@@ -167,24 +169,24 @@ def create_conversation_gur_monster_hunter_putrid_bog() -> None:
         4.368,
         '568c8ed8-939a-443c-8548-f22e7034e709',
         skip_tl_nodes = ('TLShot',),
-        phase_duration=4.7,
+        phase_duration = 4.7,
         emotions = {
             bg3.SPEAKER_SHADOWHEART: ((0.5, 16, None), (1.77, 16, 1), (2.83, 32, None), (3.79, 2048, None))
         })
-    t.create_tl_shot('b4155335-5e08-4d85-8ccd-ddebf5507447', 0.0, 4.4)
-    t.create_tl_shot('e7f21f15-f386-40f4-bb0f-2f9f42249ad1', 4.4, 4.7)
+    t.create_tl_shot('b4155335-5e08-4d85-8ccd-ddebf5507447', 0.0, 4.7)
+    #t.create_tl_shot('e7f21f15-f386-40f4-bb0f-2f9f42249ad1', 4.4, 4.7)
+
 
     # You're as loyal as a pup and twice as handsome.
-    # You're as loyal as a pup and twice as pretty.
-    # You're as loyal as a pup and twice as charming.
     d.create_standard_dialog_node(
         'b5672ea7-9093-e82d-5b87-bee7b48bbdf6',
         bg3.SPEAKER_SHADOWHEART,
         [],
-        (
-            bg3.text_content('h18a8a0c7g2147g42beg8a5fgdedc6b33b731', 1, '2ca3a5d6-7af6-48d8-8b97-f1b2eb1702a3', custom_sequence_id='2ca3a5d6-7af6-48d8-8b97-f1b2eb1702a3'),
-            bg3.text_content('haab6ee84g0a04g403dga445g5d9e7088377b', 1, '57e2aae4-fbd1-46f2-8f67-167e9b6a57db', custom_sequence_id='57e2aae4-fbd1-46f2-8f67-167e9b6a57db'),
-            bg3.text_content('h3ce42409g98f5g4c9bgaf28ge161d5015c0a', 1, '74290c11-8cff-4c82-b1d1-5dc565cd0794', custom_sequence_id='74290c11-8cff-4c82-b1d1-5dc565cd0794'),
+        bg3.text_content('h18a8a0c7g2147g42beg8a5fgdedc6b33b731', 1),
+        checkflags = (
+            bg3.flag_group('Tag', (
+                (bg3.flag(bg3.TAG_MALE, True, speaker_idx_tav)),
+            )),
         ),
         constructor=bg3.dialog_object.ANSWER,
         end_node=True)
@@ -195,38 +197,63 @@ def create_conversation_gur_monster_hunter_putrid_bog() -> None:
         'b5672ea7-9093-e82d-5b87-bee7b48bbdf6',
         skip_tl_nodes = ('TLShot',),
         phase_duration = 3.8,
-        line_index = 0,
+        #line_index = 0,
         emotions = {
             bg3.SPEAKER_SHADOWHEART: ((0.61, 16, None), (1.2, 4, None), (2.06, 16, None), (2.95, 64, None))
         })
     t.create_tl_shot('b4155335-5e08-4d85-8ccd-ddebf5507447', 0.0, 3.224)
     t.create_tl_shot('0e8837db-4344-48d0-9175-12262c73806b', 3.224, 3.8)
+
+
+    # You're as loyal as a pup and twice as pretty.
+    d.create_standard_dialog_node(
+        '80965aba-cc3d-45d0-bac0-30d6d30034c5',
+        bg3.SPEAKER_SHADOWHEART,
+        [],
+        bg3.text_content('haab6ee84g0a04g403dga445g5d9e7088377b', 1),
+        checkflags = (
+            bg3.flag_group('Tag', (
+                (bg3.flag(bg3.TAG_FEMALE, True, speaker_idx_tav)),
+            )),
+        ),
+        constructor=bg3.dialog_object.ANSWER,
+        end_node=True)
     t.create_new_voice_phase_from_another(
         template_node_uuid,
         bg3.SPEAKER_SHADOWHEART,
         3.379,
-        'b5672ea7-9093-e82d-5b87-bee7b48bbdf6',
+        '80965aba-cc3d-45d0-bac0-30d6d30034c5',
         skip_tl_nodes = ('TLShot',),
         phase_duration = 3.8,
-        line_index = 1,
         emotions = {
             bg3.SPEAKER_SHADOWHEART: ((0.61, 16, None), (1.2, 4, None), (2.06, 16, None), (2.95, 64, None))
         })
     t.create_tl_shot('b4155335-5e08-4d85-8ccd-ddebf5507447', 0.0, 3.379)
     t.create_tl_shot('0e8837db-4344-48d0-9175-12262c73806b', 3.379, 3.8)
+
+
+    # You're as loyal as a pup and twice as charming.
+    d.create_standard_dialog_node(
+        '28f07d7b-f8a5-4eae-9af4-dba6261edc58',
+        bg3.SPEAKER_SHADOWHEART,
+        [],
+        bg3.text_content('h3ce42409g98f5g4c9bgaf28ge161d5015c0a', 1),
+        constructor=bg3.dialog_object.ANSWER,
+        end_node=True)
     t.create_new_voice_phase_from_another(
         template_node_uuid,
         bg3.SPEAKER_SHADOWHEART,
         3.306,
-        'b5672ea7-9093-e82d-5b87-bee7b48bbdf6',
+        '28f07d7b-f8a5-4eae-9af4-dba6261edc58',
         skip_tl_nodes = ('TLShot',),
         phase_duration = 3.8,
-        line_index = 2,
         emotions = {
             bg3.SPEAKER_SHADOWHEART: ((0.61, 16, None), (1.2, 4, None), (2.06, 16, None), (2.95, 64, None))
         })
     t.create_tl_shot('b4155335-5e08-4d85-8ccd-ddebf5507447', 0.0, 3.306)
     t.create_tl_shot('0e8837db-4344-48d0-9175-12262c73806b', 3.306, 3.8)
+
+
 
     # He knows too much - safer to keep him with us than risk him exposing our condition.
     d.create_standard_dialog_node(
@@ -260,6 +287,7 @@ def create_conversation_gur_monster_hunter_putrid_bog() -> None:
     t.create_tl_shot('b4155335-5e08-4d85-8ccd-ddebf5507447', 0.0, 6.510)
     t.create_tl_shot('e7f21f15-f386-40f4-bb0f-2f9f42249ad1', 6.510, 7)
 
+
     # I just hope I don't come to regret standing by him.
     d.create_standard_dialog_node(
         '4aead3ff-33fb-484a-bbf5-0d9fea92d42c',
@@ -267,6 +295,7 @@ def create_conversation_gur_monster_hunter_putrid_bog() -> None:
         ['7b189788-4a3c-44dd-8b2f-225bf9088127'],
         bg3.text_content('hbe191947g233fg4ef7gb172g415bdd40ba49', 1),
         constructor=bg3.dialog_object.QUESTION)
+
 
     # Well you can always rid yourself of that regret with a well-place thrust of a dagger... if it comes to that, of course.
     d.create_standard_dialog_node(

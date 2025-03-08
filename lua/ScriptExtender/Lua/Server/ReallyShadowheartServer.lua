@@ -244,6 +244,36 @@ function CompanionLeavesParty(companion_uuid, tav_uuid)
   Osi.PROC_DisappearOutOfSight(companion_uuid, "Walk", 1, "GLO_CompanionLeaves_LowRelation")
 end
 
+function StartShadowheartIrregularBehavior()
+  local mod_vars = Ext.Vars.GetModVariables("e49a2415-9dda-48ad-84c9-0abd35686529")
+  if mod_vars.ShadowheartIrreguralBehaviorAct3 ~= 1 then
+    mod_vars.ShadowheartIrreguralBehaviorAct3 = 1
+    Osi.PlayLoopingAnimation(
+      "3ed74f06-3c60-42dc-83f6-f034cb47c679",
+      "CUST_Dejected_01_Start_55dac046-b8d2-4681-906d-f263c263071c",
+      "CUST_Dejected_01_Loop_487b6cb3-1ca3-4041-acba-bcac93cfcbe5",
+      "CUST_Dejected_01_End_c49344c6-72ce-460a-b55c-94708983e6be",
+      "CUST_Dejected_01_Loop_487b6cb3-1ca3-4041-acba-bcac93cfcbe5",
+      "CUST_Dejected_01_Loop_487b6cb3-1ca3-4041-acba-bcac93cfcbe5",
+      "CUST_Dejected_01_Loop_487b6cb3-1ca3-4041-acba-bcac93cfcbe5",
+      "CUST_Dejected_01_Loop_487b6cb3-1ca3-4041-acba-bcac93cfcbe5")
+  end
+end
+
+function GetTavUUID()
+  Ext.Utils.Print("ReallyShadowheart: GetTavUUID")
+  local players = Osi.DB_Players:Get(nil)
+  for _, player in ipairs(players) do
+    local player_uuid = player[1]:sub(-36)
+    Ext.Utils.Print("ReallyShadowheart: GetTavUUID player_uuid = " .. player_uuid)
+    if Osi.IsTagged(player_uuid, "306b9b05-1057-4770-aa17-01af21acd650") then
+      Ext.Utils.Print("ReallyShadowheart: GetTavUUID tav_uuid = " .. player_uuid)
+      return player_uuid
+    end
+  end
+  return nil
+end
+
 Ext.Vars.RegisterModVariable("e49a2415-9dda-48ad-84c9-0abd35686529", "BetrayerUUID", {
   Server = true, Client = false, SyncToClient = false
 })
@@ -260,21 +290,9 @@ Ext.Vars.RegisterModVariable("e49a2415-9dda-48ad-84c9-0abd35686529", "Shadowhear
   Server = true, Client = false, SyncToClient = false
 })
 
-function StartShadowheartIrregularBehavior()
-  local mod_vars = Ext.Vars.GetModVariables("e49a2415-9dda-48ad-84c9-0abd35686529")
-  if mod_vars.ShadowheartIrreguralBehaviorAct3 ~= 1 then
-    mod_vars.ShadowheartIrreguralBehaviorAct3 = 1
-    Osi.PlayLoopingAnimation(
-      "3ed74f06-3c60-42dc-83f6-f034cb47c679",
-      "CUST_Dejected_01_Start_55dac046-b8d2-4681-906d-f263c263071c",
-      "CUST_Dejected_01_Loop_487b6cb3-1ca3-4041-acba-bcac93cfcbe5",
-      "CUST_Dejected_01_End_c49344c6-72ce-460a-b55c-94708983e6be",
-      "CUST_Dejected_01_Loop_487b6cb3-1ca3-4041-acba-bcac93cfcbe5",
-      "CUST_Dejected_01_Loop_487b6cb3-1ca3-4041-acba-bcac93cfcbe5",
-      "CUST_Dejected_01_Loop_487b6cb3-1ca3-4041-acba-bcac93cfcbe5",
-      "CUST_Dejected_01_Loop_487b6cb3-1ca3-4041-acba-bcac93cfcbe5")
-  end
-end
+Ext.Vars.RegisterModVariable("e49a2415-9dda-48ad-84c9-0abd35686529", "ShadowheartParentsPointsCounter", {
+  Server = true, Client = false, SyncToClient = false
+})
 
 Ext.Osiris.RegisterListener("FlagSet", 3, "after", function(flag, speaker, instanceId)
   local flag_uuid = flag:sub(-36)
@@ -302,6 +320,14 @@ Ext.Osiris.RegisterListener("FlagSet", 3, "after", function(flag, speaker, insta
       local approval_change = 0 - current_approval
       Osi.ChangeApprovalRating(Shadowheart_UUID, speaker_uuid, 0, approval_change)
       Ext.Utils.Print("Set approval to ZERO, speaker uuid: " .. speaker_uuid)
+    end
+  elseif flag_uuid == "a562c158-cb0c-40a9-9f34-44f76bfdfbf6" then
+    local current_approval = Osi.GetApprovalRating(Shadowheart_UUID, speaker_uuid)
+    Ext.Utils.Print("Current approval = " .. current_approval .. "; speaker uuid = " .. speaker_uuid)
+    if current_approval > 35 then
+      local approval_change = 35 - current_approval
+      Osi.ChangeApprovalRating(Shadowheart_UUID, speaker_uuid, 0, approval_change)
+      Ext.Utils.Print("Set approval to 35, speaker uuid: " .. speaker_uuid)
     end
   elseif flag_uuid == "42a1da52-ccf5-46a0-954d-8f1c53dd20b6" then
     local current_approval = Osi.GetApprovalRating(Shadowheart_UUID, speaker_uuid)
@@ -343,7 +369,22 @@ Ext.Osiris.RegisterListener("FlagSet", 3, "after", function(flag, speaker, insta
   elseif flag_uuid == "fb53edc2-9a89-4ad2-af83-20b5fe425cdd" then
     if Osi.GetFlag("161b7223-039d-4ebe-986f-1dcd9a66733f", Shadowheart_UUID) then
       Ext.Utils.Print("ReallyShadowheart: Night time in Camp")
+
+      -- Clear ORI_ShadowheartAnotherSwimmingLessonReplied
       Osi.ClearFlag("8942cfa4-550f-482b-8b27-56625dee1c15", Shadowheart_UUID)
+
+      local tav_uuid = GetTavUUID()
+      if tav_uuid == nil then
+        Ext.Utils.Print("ReallyShadowheart: tav UUID is nil")
+        return
+      end
+      if Osi.GetFlag("2774e4ec-e92d-41c1-a4b0-c6ddc84417da", tav_uuid) == 1 and Osi.GetFlag("c8f7b189-ea19-4a74-b581-305abdc9eb19", tav_uuid) == 0 then
+        Osi.PROC_RelationshipDialog(
+          "3ed74f06-3c60-42dc-83f6-f034cb47c679",
+          "95ca3833-09d0-5772-b16a-c7a5e9208fe5",
+          "2774e4ec-e92d-41c1-a4b0-c6ddc84417da",
+          "3ed74f06-3c60-42dc-83f6-f034cb47c679", 0)
+      end
     end
   elseif flag_uuid == "46190b70-0be5-4f11-834c-59b278211de2" then
     Osi.DB_CampNight_RomanceNight(
@@ -401,18 +442,127 @@ Ext.Osiris.RegisterListener("FlagSet", 3, "after", function(flag, speaker, insta
     Osi.SetFlag("f78e829a-55cb-4dbf-859e-2f125471fbdc", Minsc_UUID)
     Osi.SetFlag("f78e829a-55cb-4dbf-859e-2f125471fbdc", Jaheira_UUID)
     Osi.SetFlag("f78e829a-55cb-4dbf-859e-2f125471fbdc", Halsin_UUID)
+  elseif flag_uuid == '600ca39c-5887-4657-bf4c-d417cc3d146b' or flag_uuid == 'a1cf2f2f-8f3f-4ac7-a1f7-32e3bdb1bda4' or flag_uuid == '56084254-ec74-4c13-8eb2-6e8163f16b8f' then
+    local mod_vars = Ext.Vars.GetModVariables("e49a2415-9dda-48ad-84c9-0abd35686529")
+    --Ext.Utils.Print("ReallyShadowheart: memorable location at Baldur's Gate")
+    if mod_vars.ShadowheartParentsPointsCounter == 1 then
+      --Ext.Utils.Print("ReallyShadowheart: visited 2 memorable locations or more")
+      Osi.SetFlag("ac830dd2-bad2-44aa-9970-136c16477500", Shadowheart_UUID)
+      Osi.SetFlag("c5c03e5f-44af-4347-a081-bbbd9d5fc632", Shadowheart_UUID)
+      Osi.PROC_RelationshipDialog(
+        "3ed74f06-3c60-42dc-83f6-f034cb47c679",
+        "95ca3833-09d0-5772-b16a-c7a5e9208fe5",
+        "c5c03e5f-44af-4347-a081-bbbd9d5fc632",
+        "3ed74f06-3c60-42dc-83f6-f034cb47c679", 0)
+    else
+      mod_vars.ShadowheartParentsPointsCounter = 1
+    end
+  end
+end)
+
+--Ext.Osiris.RegisterListener("StatusApplied", 4, "before", function(object, status, causee, storyActionID)
+--  Ext.Utils.Print("ReallyShadowheart: StatusApplied")
+--  if object ~= nil then
+--    Ext.Utils.Print("ReallyShadowheart: StatusApplied object = " .. object)
+--  else
+--    Ext.Utils.Print("ReallyShadowheart: StatusApplied object is nil")
+--  end
+--  if status ~= nil then
+--    Ext.Utils.Print("ReallyShadowheart: StatusApplied status = " .. status)
+--  else
+--    Ext.Utils.Print("ReallyShadowheart: StatusApplied status is nil")
+--  end
+--  if causee ~= nil then
+--    Ext.Utils.Print("ReallyShadowheart: StatusApplied causee = " .. causee)
+--  else
+--    Ext.Utils.Print("ReallyShadowheart: StatusApplied causee is nil")
+--  end
+--  if storyActionID ~= nil then
+--    Ext.Utils.Print("ReallyShadowheart: StatusApplied storyActionID = " .. storyActionID)
+--  else
+--    Ext.Utils.Print("ReallyShadowheart: StatusApplied storyActionID is nil")
+--  end
+--end)
+
+--Ext.Osiris.RegisterListener("PROC_LongRest", 0, "before", function()
+--  Ext.Utils.Print("ReallyShadowheart: LONG REST (before)")
+--
+  -- Reset ORI_Shadowheart_AfterParents
+--  Osi.ClearFlag("6f8e2b2b-5ffa-4e83-adf7-d80a8e36a8d8", "3ed74f06-3c60-42dc-83f6-f034cb47c679")
+--
+  -- Reset ORI_ShadowheartAnotherSwimmingLessonReplied 
+--  Osi.ClearFlag("8942cfa4-550f-482b-8b27-56625dee1c15", "3ed74f06-3c60-42dc-83f6-f034cb47c679")
+--
+  -- Check if ORI_ShadowheartMoreOpportunitiesToSlipAway is set, and set ORI_LongRestBeforeMoreOpportunitiesToSlipAway on long rest
+  -- This prevents the "more opportunities to slip away" option from appearing immediately after the post-skinny dipping conversation
+--  if Osi.GetFlag("2f2779cf-4a7b-44ef-8458-d29b48578740", "3ed74f06-3c60-42dc-83f6-f034cb47c679") then
+--    Osi.SetFlag("fec1c849-c9b6-47ab-9dd4-84acff4cd01a", "3ed74f06-3c60-42dc-83f6-f034cb47c679")
+--  end
+--end) DB_CAMP_SkipSleepCutscene
+
+--Ext.Osiris.RegisterListener("PROC_Camp_PlacePlayerInBed", 2, "after", function(character, bed)
+--  Ext.Utils.Print("ReallyShadowheart: PROC_Camp_PlacePlayerInBed " .. character .. " to bed " .. bed)
+--end)
+
+--Ext.Osiris.RegisterListener("StatusApplied", 4, "before", function(object, status, cause, action_id)
+--  if object == "S_Player_ShadowHeart_3ed74f06-3c60-42dc-83f6-f034cb47c679" then
+--    Ext.Utils.Print("ReallyShadowheart: StatusApplied " .. object .. ", " .. status .. ", " .. cause)
+--  end
+--end)
+
+--Ext.Osiris.RegisterListener("StatusRemoved", 4, "before", function(object, status, cause, action_id)
+--  if object == "S_Player_ShadowHeart_3ed74f06-3c60-42dc-83f6-f034cb47c679" then
+--    Ext.Utils.Print("ReallyShadowheart: StatusRemoved " .. object .. ", " .. status .. ", " .. cause)
+--  end
+--end)
+
+function GetDBQueryResult(result)
+  if result == nil then
+    return nil
+  end
+  result = result[1]
+  if result == nil then
+    return nil
+  end
+  result = result[1]
+  return result
+end
+
+Ext.Osiris.RegisterListener("LongRestStarted", 0, "before", function()
+  Ext.Utils.Print("ReallyShadowheart: LongRestStarted")
+  local tav_uuid = Osi.GetHostCharacter()
+  if tav_uuid == nil then
+    Ext.Utils.Print("ReallyShadowheart: LongRestStarted, Tav uuid is nil")
+    return
+  end
+  local random_number = Osi.Random(2)
+  if random_number == 1 then
+    Osi.SetFlag("eff18d52-34d0-4578-8891-eb8e6bfdbf32", tav_uuid)
+    Ext.Utils.Print("ReallyShadowheart: alternative night sleep cutscene")
+  else
+    Osi.ClearFlag("eff18d52-34d0-4578-8891-eb8e6bfdbf32", tav_uuid)
+    Ext.Utils.Print("ReallyShadowheart: default night sleep cutscene")
   end
 end)
 
 
-Ext.Osiris.RegisterListener("PROC_LongRest", 0, "before", function()
-  Ext.Utils.Print("ReallyShadowheart: LONG REST (before)")
+Ext.Osiris.RegisterListener("LongRestFinished", 0, "after", function()
+  Ext.Utils.Print("ReallyShadowheart: LongRestFinished")
 
   -- Reset ORI_Shadowheart_AfterParents
   Osi.ClearFlag("6f8e2b2b-5ffa-4e83-adf7-d80a8e36a8d8", "3ed74f06-3c60-42dc-83f6-f034cb47c679")
 
   -- Reset ORI_ShadowheartAnotherSwimmingLessonReplied 
   Osi.ClearFlag("8942cfa4-550f-482b-8b27-56625dee1c15", "3ed74f06-3c60-42dc-83f6-f034cb47c679")
+
+  -- Reset Shadowheart_Hesitated_To_Ask
+  Osi.ClearFlag("d8d602d9-d2ab-4a8e-8ffb-c465fd52ce18", "3ed74f06-3c60-42dc-83f6-f034cb47c679")
+
+  -- Reset Tav_Said_Love_You
+  Osi.ClearFlag("ea47a913-77a8-4a7e-bdfb-a13880f25107", "3ed74f06-3c60-42dc-83f6-f034cb47c679")
+
+  -- Reset Tav_Already_Prayed_With_Her_Today
+  Osi.ClearFlag("a2a96abb-1b40-42fe-9f8b-6685eb173c63", "3ed74f06-3c60-42dc-83f6-f034cb47c679")
 
   -- Check if ORI_ShadowheartMoreOpportunitiesToSlipAway is set, and set ORI_LongRestBeforeMoreOpportunitiesToSlipAway on long rest
   -- This prevents the "more opportunities to slip away" option from appearing immediately after the post-skinny dipping conversation
@@ -421,26 +571,50 @@ Ext.Osiris.RegisterListener("PROC_LongRest", 0, "before", function()
   end
 end)
 
-
-Ext.Osiris.RegisterListener("PROC_LongRest", 0, "after", function()
-  Ext.Utils.Print("ReallyShadowheart: LONG REST (after)")
-
-  -- Reset ORI_Shadowheart_AfterParents
-  Osi.ClearFlag("6f8e2b2b-5ffa-4e83-adf7-d80a8e36a8d8", "3ed74f06-3c60-42dc-83f6-f034cb47c679")
-
-  -- Reset ORI_ShadowheartAnotherSwimmingLessonReplied 
-  Osi.ClearFlag("8942cfa4-550f-482b-8b27-56625dee1c15", "3ed74f06-3c60-42dc-83f6-f034cb47c679")
-
-  -- Check if ORI_ShadowheartMoreOpportunitiesToSlipAway is set, and set ORI_LongRestBeforeMoreOpportunitiesToSlipAway on long rest
-  -- This prevents the "more opportunities to slip away" option from appearing immediately after the post-skinny dipping conversation
-  if Osi.GetFlag("2f2779cf-4a7b-44ef-8458-d29b48578740", "3ed74f06-3c60-42dc-83f6-f034cb47c679") then
-    Osi.SetFlag("fec1c849-c9b6-47ab-9dd4-84acff4cd01a", "3ed74f06-3c60-42dc-83f6-f034cb47c679")
+Ext.Osiris.RegisterListener("ApprovalRatingChanged", 3, "after", function(rating_owner, rated_character, new_approval)
+  Ext.Utils.Print("ApprovalRatingChanged " .. rating_owner .. ", " .. rated_character .. ", " .. new_approval)
+  if rating_owner == "3ed74f06-3c60-42dc-83f6-f034cb47c679" then
+    Osi.SetFlag("5f660cf8-4824-4930-a3f7-cc384c40c786", rated_character)
+    if new_approval >= 80 then
+      Ext.Utils.Print("Shadowheart approval >= 80")
+      Osi.SetFlag("f1391075-7de2-450e-aac3-c33ff6b3d1dd", rated_character)
+    else
+      Ext.Utils.Print("Shadowheart approval < 80")
+      Osi.ClearFlag("f1391075-7de2-450e-aac3-c33ff6b3d1dd", rated_character)
+    end
   end
 end)
 
+Ext.Osiris.RegisterListener("DialogStarted", 2, "after", function(dialog_resource, dialog_id)
+  Ext.Utils.Print("DialogStarted " .. dialog_resource .. ", " .. dialog_id)
+--  local speaker1 = Osi.DialogGetInvolvedPlayer(dialog_id, 1)
+--  local speaker2 = Osi.DialogGetInvolvedPlayer(dialog_id, 2)
+--  local speaker3 = Osi.DialogGetInvolvedPlayer(dialog_id, 3)
+--  local speaker4 = Osi.DialogGetInvolvedPlayer(dialog_id, 4)
+--  if speaker1 ~= nil then
+--    Ext.Utils.Print("DialogStarted, speaker 1: " .. speaker1)
+--  else
+--    Ext.Utils.Print("DialogStarted, speaker 1: nil")
+--  end
+--  if speaker2 ~= nil then
+--    Ext.Utils.Print("DialogStarted, speaker 2: " .. speaker2)
+--  else
+--    Ext.Utils.Print("DialogStarted, speaker 2: nil")
+--  end
+--  if speaker3 ~= nil then
+--    Ext.Utils.Print("DialogStarted, speaker 3: " .. speaker3)
+--  else
+--    Ext.Utils.Print("DialogStarted, speaker 3: nil")
+--  end
+--  if speaker4 ~= nil then
+--    Ext.Utils.Print("DialogStarted, speaker 4: " .. speaker4)
+--  else
+--    Ext.Utils.Print("DialogStarted, speaker 4: nil")
+--  end
+end)
 
 Ext.Osiris.RegisterListener("DialogEnded", 2, "after", function(dialog_resource, dialog_id)
-  --Ext.Utils.Print("DialogEnded " .. dialog_resource .. ", " .. dialog_id)
+  Ext.Utils.Print("DialogEnded " .. dialog_resource .. ", " .. dialog_id)
   local tav_uuid = Osi.GetHostCharacter()
   if tav_uuid ~= nil then
     CheckCompanionsLeavingParty(tav_uuid)
@@ -461,14 +635,17 @@ Ext.Osiris.RegisterListener("DB_Dead", 1, "after", function(who)
   end
 end)
 
+Ext.Osiris.RegisterListener("VoiceBarkEnded", 2, "after", function(bark_id, instance_id)
+--  Ext.Utils.Print("ReallyShadowheart: VoiceBarkEnded " .. bark_id)
+  local bark_uuid = bark_id:sub(-36)
+  if bark_uuid == "62043e30-4a81-62e2-c9db-ea950ce747de" then
+    Osi.PROC_RelationshipDialog(
+      "S_Player_ShadowHeart_3ed74f06-3c60-42dc-83f6-f034cb47c679",
+      "ShadowHeart_InParty_95ca3833-09d0-5772-b16a-c7a5e9208fe5",
+      "S_Player_ShadowHeart_3ed74f06-3c60-42dc-83f6-f034cb47c679");
+  end
+end)
 
---Ext.Events.GameStateChanged:Subscribe(function (e)
---  _P("Game state change")
---end)
-
---Ext.Events.ModuleLoadStarted:Subscribe(function (e)
---  _P("ModuleLoadStarted")
---end)
 
 
 Ext.Utils.Print("")

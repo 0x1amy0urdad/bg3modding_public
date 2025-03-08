@@ -6,12 +6,40 @@ from .build import add_build_procedure
 from .context import files
 from .flags import *
 
+from decimal import Decimal
+
 
 ##########################################################################################################
 # Skinny dipping cutscene: more opportunities to slip away, fix for the black hair bug, etc
 ##########################################################################################################
 
 def patch_skinny_dipping_scene() -> None:
+
+    ##########################################################################################################
+    # Dialog: ShadowHeart_InParty2.lsf
+    # This is a fix for the missed discussion about the night at the beach.
+    # Vanilla game checks FLAG_ORI_State_WasPartneredWithShadowheart
+    # The correct flag is FLAG_ORI_State_PartneredWithShadowheart
+    ##########################################################################################################
+
+    d = bg3.dialog_object(files.get_file('Gustav', 'Mods/GustavDev/Story/DialogsBinary/Companions/ShadowHeart_InParty2.lsf'))
+
+    speaker_idx_tav = d.get_speaker_slot_index(bg3.SPEAKER_PLAYER)
+
+    about_our_night_at_the_beach_node_uuid = 'b3bd2cbe-b758-11d7-038f-2966141bf7f9'
+
+    d.set_dialog_flags(
+        about_our_night_at_the_beach_node_uuid,
+        checkflags = (
+            bg3.flag_group('Global', (
+                bg3.flag(bg3.FLAG_ORI_Shadowheart_State_PostSkinnydipping_Discussed, False, None),
+                bg3.flag(bg3.FLAG_ORI_Shadowheart_State_PostSkinnyDipping_DiscussionAvailable, True, None)
+            )),
+            bg3.flag_group('Object', (
+                bg3.flag(bg3.FLAG_ORI_State_PartneredWithShadowheart, True, speaker_idx_tav),
+            )),
+        ))
+
 
     ##########################################################################################################
     # Dialog: ShadowHeart_InParty2_Nested_DefaultChapter.lsf
@@ -25,9 +53,6 @@ def patch_skinny_dipping_scene() -> None:
 
     slot_idx_shadowheart = d.get_speaker_slot_index(bg3.SPEAKER_SHADOWHEART)
     slot_idx_tav = d.get_speaker_slot_index(bg3.SPEAKER_PLAYER)
-
-    shadowheart_approval_60_true = bg3.flag_group('Object', (bg3.flag(bg3.FLAG_Approval_AtLeast_60_For_Sp2, True, slot_idx_shadowheart),))
-    shadowheart_approval_60_false = bg3.flag_group('Object', (bg3.flag(bg3.FLAG_Approval_AtLeast_60_For_Sp2, False, slot_idx_shadowheart),))
 
     another_swim_lesson_node_uuid = 'ff663060-bb62-48d8-928d-5253b65da04b'
     took_the_words_node_uuid = 'dca8eede-5035-4977-bca7-cf8a08c1efb4'
@@ -48,9 +73,9 @@ def patch_skinny_dipping_scene() -> None:
             )),
             bg3.flag_group('Object', (
                 bg3.flag(bg3.FLAG_ORI_State_PartneredWithShadowheart, True, slot_idx_tav),
-                bg3.flag(ORI_ShadowheartMoreOpportunitiesToSlipAway.uuid, True, slot_idx_shadowheart),
-                bg3.flag(ORI_LongRestBeforeMoreOpportunitiesToSlipAway.uuid, True, slot_idx_shadowheart),
-                bg3.flag(ORI_ShadowheartAnotherSwimmingLessonReplied.uuid, False, slot_idx_shadowheart),                     
+                bg3.flag(Shadowheart_More_Opportunities_To_Slip_Away.uuid, True, slot_idx_shadowheart),
+                bg3.flag(Shadowheart_LongRest_Before_More_Opportunities_To_Slip_Away.uuid, True, slot_idx_shadowheart),
+                bg3.flag(Shadowheart_Another_Swimming_Lesson_Replied.uuid, False, slot_idx_shadowheart),                     
             )),
         ))
 
@@ -60,7 +85,12 @@ def patch_skinny_dipping_scene() -> None:
         bg3.SPEAKER_SHADOWHEART,
         [wait_until_others_asleep_node_uuid],
         bg3.text_content('hc89bd245g631dg480ag9218g7d20f8f9422c', 1, '72bb47ca-818d-49ca-b8c6-aed90ed59a6a'),
-        checkflags=(shadowheart_approval_60_true,)
+        checkflags=(
+            bg3.flag_group('Object', (
+                bg3.flag(bg3.FLAG_Approval_AtLeast_60_For_Sp2, True, slot_idx_shadowheart),
+                bg3.flag(Shadowheart_Has_Doubts_About_Tav.uuid, False, speaker_idx_tav),
+            )),
+        )
     )
     t.create_simple_dialog_answer_phase(
         bg3.SPEAKER_SHADOWHEART,
@@ -81,8 +111,8 @@ def patch_skinny_dipping_scene() -> None:
         bg3.text_content('h40c1c09egd7bcg4575g8a9dgd8ee7a05e75d', 1, '5ca4af10-9855-40f2-8abe-d846c0f4d9b0'),
         setflags=(
             bg3.flag_group('Object', (
-                bg3.flag(ORI_ShadowheartAnotherSwimmingLesson.uuid, True, slot_idx_shadowheart),
-                bg3.flag(ORI_ShadowheartAnotherSwimmingLessonReplied.uuid, True, slot_idx_shadowheart),
+                bg3.flag(Shadowheart_AnotherSwimmingLesson.uuid, True, slot_idx_shadowheart),
+                bg3.flag(Shadowheart_Another_Swimming_Lesson_Replied.uuid, True, slot_idx_shadowheart),
             )),
         ),
         end_node=True
@@ -107,10 +137,9 @@ def patch_skinny_dipping_scene() -> None:
         bg3.SPEAKER_SHADOWHEART,
         [],
         bg3.text_content('h2df9f309g5badg4c17gb9efgff4360cabd70', 1, '0d7304c8-681a-4b1e-b5e9-5476d52fa095'),
-        checkflags=(shadowheart_approval_60_false,),
         setflags=(
             bg3.flag_group('Object', (
-                bg3.flag(ORI_ShadowheartAnotherSwimmingLessonReplied.uuid, True, slot_idx_shadowheart),
+                bg3.flag(Shadowheart_Another_Swimming_Lesson_Replied.uuid, True, slot_idx_shadowheart),
             )),
         ),
         end_node=True
@@ -142,14 +171,29 @@ def patch_skinny_dipping_scene() -> None:
     d = bg3.dialog_object(files.get_file('Gustav', 'Mods/GustavDev/Story/DialogsBinary/Companions/ShadowHeart_InParty2_Nested_Romance.lsf'))
 
     slot_idx_shadowheart = d.get_speaker_slot_index(bg3.SPEAKER_SHADOWHEART)
-    more_opportunities_to_slip_away_true = bg3.flag_group('Object', (
-        bg3.flag(ORI_ShadowheartMoreOpportunitiesToSlipAway.uuid, True, slot_idx_shadowheart),
-        bg3.flag(ORI_LongRestBeforeMoreOpportunitiesToSlipAway.uuid, False, slot_idx_shadowheart),
+    slot_idx_tav = d.get_speaker_slot_index(bg3.SPEAKER_PLAYER)
+
+    # But of course they will. I hope we'll have more opportunities to slip away... and make sand castles.
+    d.add_dialog_flags('08c8b4f5-79df-4b9b-9e11-2e2c0cf06a3d', setflags = (
+        bg3.flag_group('Object', (
+            bg3.flag(Shadowheart_More_Opportunities_To_Slip_Away.uuid, True, slot_idx_shadowheart),
+            bg3.flag(Shadowheart_LongRest_Before_More_Opportunities_To_Slip_Away.uuid, False, slot_idx_shadowheart),
+        )),
+    ))
+    # I suppose it doesn't. I'm glad we have each other. And I hope we'll have more opportunities to slip away.
+    d.add_dialog_flags('277288c2-302f-4e53-9e3d-02974e7ac352', setflags = (
+        bg3.flag_group('Object', (
+            bg3.flag(Shadowheart_More_Opportunities_To_Slip_Away.uuid, True, slot_idx_shadowheart),
+            bg3.flag(Shadowheart_LongRest_Before_More_Opportunities_To_Slip_Away.uuid, False, slot_idx_shadowheart),
+        )),
     ))
 
-    d.add_dialog_flags('08c8b4f5-79df-4b9b-9e11-2e2c0cf06a3d', setflags=[more_opportunities_to_slip_away_true])
-    d.add_dialog_flags('277288c2-302f-4e53-9e3d-02974e7ac352', setflags=[more_opportunities_to_slip_away_true])
-
+    # Oh. I'm sorry you feel that way... I don't.
+    d.add_dialog_flags('ce072faa-0aa6-404a-aeaa-27fb3d226b5d', setflags = (
+        bg3.flag_group('Object', (
+            bg3.flag(Shadowheart_Has_Doubts_About_Tav.uuid, True, slot_idx_tav),
+        )),
+    ))
 
     ##########################################################################################################
     # Dialog: CAMP_Shadowheart_SkinnyDipping_SD_ROM.lsf
@@ -160,21 +204,50 @@ def patch_skinny_dipping_scene() -> None:
     t = bg3.timeline_object(files.get_file('Gustav', 'Public/GustavDev/Timeline/Generated/CAMP_Shadowheart_SkinnyDipping_SD_ROM.lsf'), d)
 
     slot_idx_shadowheart = d.get_speaker_slot_index(bg3.SPEAKER_SHADOWHEART)
-    more_opportunities_to_slip_away_false = bg3.flag_group('Object', (bg3.flag(ORI_ShadowheartMoreOpportunitiesToSlipAway.uuid, False, slot_idx_shadowheart),))
 
-    # Supperss nodes for the 2nd run of the unsafe cutscene as they don't make sense anymore
-    d.set_dialog_flags('a36d3365-38ba-8a0a-e249-8491cf394f2c', checkflags=[more_opportunities_to_slip_away_false])
-    d.set_dialog_flags('0403b053-4b6c-9cfb-7b95-007c6024509b', checkflags=[more_opportunities_to_slip_away_false])
-    d.set_dialog_flags('955c8afa-d714-09e6-2541-a409d7919304', checkflags=[more_opportunities_to_slip_away_false])
-    d.set_dialog_flags('bbd5a13c-fa69-58c4-e0d8-1b65c3dc908d', checkflags=[more_opportunities_to_slip_away_false])
-    d.set_dialog_flags('d2205284-8cbe-0cba-be5a-6693eb699a5a', checkflags=[more_opportunities_to_slip_away_false])
-    d.set_dialog_flags('c0230403-b3a9-2203-baff-7102710154c7', checkflags=[more_opportunities_to_slip_away_false])
+    dialog_nodes = [
+        # Suppress nodes for the 2nd run of the unsafe cutscene as they don't make sense anymore
+        'a36d3365-38ba-8a0a-e249-8491cf394f2c', # What?
+        '0403b053-4b6c-9cfb-7b95-007c6024509b', # I never said I was coming in with you.
+        '955c8afa-d714-09e6-2541-a409d7919304', # I didn't bring anything to swim in.
+        'bbd5a13c-fa69-58c4-e0d8-1b65c3dc908d', # There's easier ways to get me naked, you know.
+        'd2205284-8cbe-0cba-be5a-6693eb699a5a', # Forget it. Let's head back.
+        'c0230403-b3a9-2203-baff-7102710154c7', # Actually, I've changed my mind. I'm heading back to camp.
 
-    # Supperss nodes for the 2nd run of the safe cutscene as they don't make sense anymore
-    d.set_dialog_flags('c70dbc9c-5afe-909b-7514-6480a9c2c79c', checkflags=[more_opportunities_to_slip_away_false])
-    d.set_dialog_flags('a00730b5-70c7-13ab-9263-239d28168c29', checkflags=[more_opportunities_to_slip_away_false])
-    d.set_dialog_flags('d53947d8-21fc-df12-a0f0-c43c4d080911', checkflags=[more_opportunities_to_slip_away_false])
-    d.set_dialog_flags('5e5a9953-4814-8853-b8ee-833e25b05af8', checkflags=[more_opportunities_to_slip_away_false])
+        # Suppress nodes for the 2nd run of the safe cutscene as they don't make sense anymore
+        'c70dbc9c-5afe-909b-7514-6480a9c2c79c',
+        'a00730b5-70c7-13ab-9263-239d28168c29',
+        'd53947d8-21fc-df12-a0f0-c43c4d080911',
+        '5e5a9953-4814-8853-b8ee-833e25b05af8',
+    ]
+    for dialog_node in dialog_nodes:
+        d.set_dialog_flags(
+            dialog_node,
+            checkflags = (
+                bg3.flag_group('Object', (
+                    bg3.flag(Shadowheart_More_Opportunities_To_Slip_Away.uuid, False, slot_idx_shadowheart),
+                )),
+            ),
+        )
+
+    aborted_sd_dialog_nodes = [
+        '37f2f70f-2be2-df93-a613-d45b1aa1db31',
+        '45b93976-c611-89c0-9546-41fb7996be5a',
+        '97859427-f401-6a21-bd0c-e855f36c7d1d'
+    ]
+    for dialog_node in aborted_sd_dialog_nodes:
+        d.set_dialog_flags(
+            dialog_node,
+            setflags = (
+                bg3.flag_group('Global', (
+                    bg3.flag(bg3.FLAG_ORI_Shadowheart_State_AbortedSkinnydipping, True, None),
+                )),
+                bg3.flag_group('Object', (
+                    bg3.flag(Shadowheart_Has_Doubts_About_Tav.uuid, True, slot_idx_tav),
+                )),
+            ))
+
+
 
     ###########################################################################
     # Timeline: CAMP_Shadowheart_SkinnyDipping_SD_ROM.lsf
